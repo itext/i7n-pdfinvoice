@@ -57,7 +57,6 @@ using System.Reflection;
 using Versions.Attributes;
 using System.IO;
 namespace iText.Zugferd {
-    /// <author>iText</author>
     public class InvoiceDOM {
         public static readonly CountryCode COUNTRY_CODE = new CountryCode();
 

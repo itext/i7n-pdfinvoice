@@ -45,12 +45,8 @@ using System;
 using iText.Zugferd.Validation;
 
 namespace iText.Zugferd.Validation.Extended {
-    /// <summary>
-    /// =
-    /// Series of codes that can be used for incoterms.
-    /// </summary>
+    /// <summary>Series of codes that can be used for incoterms.</summary>
     /// <remarks>
-    /// =
     /// Series of codes that can be used for incoterms.
     /// These codes are used only in the context of the Extended profile.
     /// </remarks>

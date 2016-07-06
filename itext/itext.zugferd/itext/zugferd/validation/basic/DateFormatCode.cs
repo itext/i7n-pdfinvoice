@@ -57,21 +57,6 @@ namespace iText.Zugferd.Validation.Basic {
 
         public const String YYYYWW = "616";
 
-        public override bool IsValid(String format) {
-            return format.Equals(YYYYMMDD) || format.Equals(YYYYMM) || format.Equals(YYYYWW);
-        }
-
-        /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
-        public virtual String ConvertToString(DateTime d, String format) {
-            return GetDateFormat(format).Format(d);
-        }
-
-        /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
-        /// <exception cref="Java.Text.ParseException"/>
-        public virtual DateTime ConvertToDate(String d, String format) {
-            return GetDateFormat(format).Parse(d);
-        }
-
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         public static SimpleDateFormat GetDateFormat(String format) {
             if (YYYYMMDD.Equals(format)) {
@@ -88,6 +73,21 @@ namespace iText.Zugferd.Validation.Basic {
                 }
             }
             throw new InvalidCodeException(format, "date format");
+        }
+
+        public override bool IsValid(String format) {
+            return format.Equals(YYYYMMDD) || format.Equals(YYYYMM) || format.Equals(YYYYWW);
+        }
+
+        /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
+        public virtual String ConvertToString(DateTime d, String format) {
+            return GetDateFormat(format).Format(d);
+        }
+
+        /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
+        /// <exception cref="Java.Text.ParseException"/>
+        public virtual DateTime ConvertToDate(String d, String format) {
+            return GetDateFormat(format).Parse(d);
         }
     }
 }

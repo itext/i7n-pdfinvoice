@@ -71,6 +71,16 @@ namespace iText.Zugferd.Validation.Comfort {
             this.level = level;
         }
 
+        public static bool IsHeaderLevel(String code) {
+            return code.Equals(REGULATORY_INFORMATION) || code.Equals(PRICE_CONDITIONS) || code.Equals(ADDITIONAL_SALES_CONDITIONS
+                ) || code.Equals(PAYMENT_INFORMATION);
+        }
+
+        public static bool IsLineLevel(String code) {
+            return code.Equals(PRICE_CALCULATION_FORMULA) || code.Equals(PRODUCT_INFORMATION) || code.Equals(CERTIFICATION_STATEMENTS
+                );
+        }
+
         public override bool IsValid(String code) {
             switch (level) {
                 case HEADER: {
@@ -82,16 +92,6 @@ namespace iText.Zugferd.Validation.Comfort {
                 }
             }
             return true;
-        }
-
-        public static bool IsHeaderLevel(String code) {
-            return code.Equals(REGULATORY_INFORMATION) || code.Equals(PRICE_CONDITIONS) || code.Equals(ADDITIONAL_SALES_CONDITIONS
-                ) || code.Equals(PAYMENT_INFORMATION);
-        }
-
-        public static bool IsLineLevel(String code) {
-            return code.Equals(PRICE_CALCULATION_FORMULA) || code.Equals(PRODUCT_INFORMATION) || code.Equals(CERTIFICATION_STATEMENTS
-                );
         }
     }
 }

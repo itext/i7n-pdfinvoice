@@ -45,12 +45,8 @@ using System;
 using iText.Zugferd.Validation;
 
 namespace iText.Zugferd.Validation.Extended {
-    /// <summary>
-    /// =
-    /// Series of codes that can be used for the product classification system.
-    /// </summary>
+    /// <summary>Series of codes that can be used for the product classification system.</summary>
     /// <remarks>
-    /// =
     /// Series of codes that can be used for the product classification system.
     /// These codes are used only in the context of the Extended profile.
     /// </remarks>
