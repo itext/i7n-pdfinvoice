@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>itext7.pdfinvoice</id>
+    <version>$version$</version>
+    <title>iText 7 pdfInvoice</title>
+    <authors>iText Software</authors>
+    <owners>iText Software</owners>
+    <licenseUrl>http://itextpdf.com/legal</licenseUrl>
+    <projectUrl>http://itextpdf.com/</projectUrl>
+    <iconUrl>http://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>pdfInvoice is an iText 7 add-on that can automate your invoicing process and make invoices readable by both humans and machines. It supports the ZUGFeRD standard.</description>
+    <summary></summary>
+    <releaseNotes>http://itextpdf.com/itext7release</releaseNotes>
+    <copyright>Copyright (c) 1998-2017 iText Group NV</copyright>
+    <language>en-US</language>
+    <tags>itext itext7 itextsharp c# .net csharp pdf zugferd pdfinvoice</tags>
+	<dependencies>
+      <dependency id="itext7" version="7.0.5-SNAPSHOT" />
+    </dependencies>
+  </metadata>
+  <files>
+	<file src="itext\itext.zugferd\bin\Release\itext.zugferd.dll" target="lib\net40" />
+	<file src="itext\itext.zugferd\bin\Release\itext.zugferd.xml" target="lib\net40" />
+  </files>
+</package>

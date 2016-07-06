@@ -1,0 +1,1 @@
+To build **pdfInvoice Community**, you need to build the zugferd solution.
