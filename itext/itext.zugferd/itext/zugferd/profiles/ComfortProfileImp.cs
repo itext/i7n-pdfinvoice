@@ -192,7 +192,7 @@ namespace iText.Zugferd.Profiles {
 
         protected internal IList<String> lineItemGrossPriceBasisQuantityCode = new List<String>();
 
-        protected internal IList<bool?[]> lineItemGrossPriceTradeAllowanceChargeIndicator = new List<bool?[]>();
+        protected internal IList<bool[]> lineItemGrossPriceTradeAllowanceChargeIndicator = new List<bool[]>();
 
         protected internal IList<String[]> lineItemGrossPriceTradeAllowanceChargeActualAmount = new List<String[]>
             ();
@@ -408,7 +408,7 @@ namespace iText.Zugferd.Profiles {
             return billingEndDateTimeFormat;
         }
 
-        public virtual bool?[] GetSpecifiedTradeAllowanceChargeIndicator() {
+        public virtual bool[] GetSpecifiedTradeAllowanceChargeIndicator() {
             return To1DArrayB(tradeAllowanceChargeIndicator);
         }
 
@@ -512,7 +512,7 @@ namespace iText.Zugferd.Profiles {
             return To1DArray(lineItemGrossPriceBasisQuantityCode);
         }
 
-        public virtual bool?[][] GetLineItemGrossPriceTradeAllowanceChargeIndicator() {
+        public virtual bool[][] GetLineItemGrossPriceTradeAllowanceChargeIndicator() {
             return To2DArrayB(lineItemGrossPriceTradeAllowanceChargeIndicator);
         }
 
@@ -749,7 +749,7 @@ namespace iText.Zugferd.Profiles {
             this.billingEndDateTimeFormat = billingEndDateTimeFormat;
         }
 
-        public virtual void AddSpecifiedTradeAllowanceCharge(bool? indicator, String actualAmount, String actualAmountCurrency
+        public virtual void AddSpecifiedTradeAllowanceCharge(bool indicator, String actualAmount, String actualAmountCurrency
             , String reason, String[] typeCodes, String[] categoryCodes, String[] applicablePercent) {
             this.tradeAllowanceChargeIndicator.Add(indicator);
             this.tradeAllowanceChargeActualAmount.Add(actualAmount);
@@ -794,8 +794,8 @@ namespace iText.Zugferd.Profiles {
 
         public virtual void AddIncludedSupplyChainTradeLineItem(String id, String[][] notes, String grossPriceChargeAmount
             , String grossPriceChargeAmountCurrencyID, String grossPriceBasisQuantity, String grossPriceBasisQuantityCode
-            , bool?[] grossPriceTradeAllowanceChargeIndicator, String[] grossPriceTradeAllowanceChargeActualAmount
-            , String[] grossPriceTradeAllowanceChargeActualAmountCurrencyID, String[] grossPriceTradeAllowanceChargeReason
+            , bool[] grossPriceTradeAllowanceChargeIndicator, String[] grossPriceTradeAllowanceChargeActualAmount, 
+            String[] grossPriceTradeAllowanceChargeActualAmountCurrencyID, String[] grossPriceTradeAllowanceChargeReason
             , String netPriceChargeAmount, String netPriceChargeAmountCurrencyID, String netPriceBasisQuantity, String
              netPriceBasisQuantityCode, String billedQuantity, String billedQuantityUnitCode, String[] lineItemSettlementTaxTypeCode
             , String[] lineItemSettlementTaxExemptionReason, String[] lineItemSettlementTaxCategoryCode, String[] 

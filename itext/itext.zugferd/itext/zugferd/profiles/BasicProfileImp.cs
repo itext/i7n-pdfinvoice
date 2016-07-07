@@ -539,8 +539,12 @@ namespace iText.Zugferd.Profiles {
             return (String[])list.ToArray(new String[list.Count]);
         }
 
-        protected internal virtual bool?[] To1DArrayB(IList<bool> list) {
-            return (bool?[])list.ToArray(new bool?[list.Count]);
+        protected internal virtual bool[] To1DArrayB(IList<bool> list) {
+            bool[] b = new bool[list.Count];
+            for (int i = 0; i < list.Count; i++) {
+                b[i] = list[i];
+            }
+            return b;
         }
 
         protected internal virtual String[][] To2DArray(IList<String[]> list) {
@@ -552,9 +556,9 @@ namespace iText.Zugferd.Profiles {
             return array;
         }
 
-        protected internal virtual bool?[][] To2DArrayB(IList<bool?[]> list) {
+        protected internal virtual bool[][] To2DArrayB(IList<bool[]> list) {
             int n = list.Count;
-            bool?[][] array = new bool?[n][];
+            bool[][] array = new bool[n][];
             for (int i = 0; i < n; i++) {
                 array[i] = list[i];
             }

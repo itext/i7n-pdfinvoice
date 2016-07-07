@@ -138,7 +138,7 @@ namespace iText.Zugferd.Profiles {
 
         String GetBillingEndDateTimeFormat();
 
-        bool?[] GetSpecifiedTradeAllowanceChargeIndicator();
+        bool[] GetSpecifiedTradeAllowanceChargeIndicator();
 
         String[] GetSpecifiedTradeAllowanceChargeActualAmount();
 
@@ -190,7 +190,7 @@ namespace iText.Zugferd.Profiles {
 
         String[] GetLineItemGrossPriceBasisQuantityCode();
 
-        bool?[][] GetLineItemGrossPriceTradeAllowanceChargeIndicator();
+        bool[][] GetLineItemGrossPriceTradeAllowanceChargeIndicator();
 
         String[][] GetLineItemGrossPriceTradeAllowanceChargeActualAmount();
 

@@ -739,7 +739,7 @@ namespace iText.Zugferd {
         /// <param name="data">the data</param>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         protected internal virtual void ImportSpecifiedTradeAllowanceCharge(Element parent, IComfortProfile data) {
-            bool?[] indicator = data.GetSpecifiedTradeAllowanceChargeIndicator();
+            bool[] indicator = data.GetSpecifiedTradeAllowanceChargeIndicator();
             String[] actualAmount = data.GetSpecifiedTradeAllowanceChargeActualAmount();
             String[] actualAmountCurr = data.GetSpecifiedTradeAllowanceChargeActualAmountCurrency();
             String[] reason = data.GetSpecifiedTradeAllowanceChargeReason();
@@ -882,7 +882,7 @@ namespace iText.Zugferd {
             String[] grossPriceChargeAmountCurrencyID = data.GetLineItemGrossPriceChargeAmountCurrencyID();
             String[] grossPriceBasisQuantity = data.GetLineItemGrossPriceBasisQuantity();
             String[] grossPriceBasisQuantityCode = data.GetLineItemGrossPriceBasisQuantityCode();
-            bool?[][] grossPriceTradeAllowanceChargeIndicator = data.GetLineItemGrossPriceTradeAllowanceChargeIndicator
+            bool[][] grossPriceTradeAllowanceChargeIndicator = data.GetLineItemGrossPriceTradeAllowanceChargeIndicator
                 ();
             String[][] grossPriceTradeAllowanceChargeActualAmount = data.GetLineItemGrossPriceTradeAllowanceChargeActualAmount
                 ();
@@ -959,7 +959,7 @@ namespace iText.Zugferd {
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         protected internal virtual void ImportLineItemComfort(Element parent, String lineID, String[][] note, String
              grossPriceChargeAmount, String grossPriceChargeAmountCurrencyID, String grossPriceBasisQuantity, String
-             grossPriceBasisQuantityCode, bool?[] grossPriceTradeAllowanceChargeIndicator, String[] grossPriceTradeAllowanceChargeActualAmount
+             grossPriceBasisQuantityCode, bool[] grossPriceTradeAllowanceChargeIndicator, String[] grossPriceTradeAllowanceChargeActualAmount
             , String[] grossPriceTradeAllowanceChargeActualAmountCurrencyID, String[] grossPriceTradeAllowanceChargeReason
             , String netPriceChargeAmount, String netPriceChargeAmountCurrencyID, String netPriceBasisQuantity, String
              netPriceBasisQuantityCode, String billedQuantity, String billedQuantityCode, String[] settlementTaxTypeCode
