@@ -40,8 +40,8 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com */
 using System;
+using System.Globalization;
 using iText.Zugferd.Exceptions;
-using iText.Zugferd.Validation;
 
 namespace iText.Zugferd.Validation.Basic {
     /// <summary>Class that can be used to check a code for a date format.</summary>
@@ -58,17 +58,17 @@ namespace iText.Zugferd.Validation.Basic {
         public const String YYYYWW = "616";
 
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
-        public static SimpleDateFormat GetDateFormat(String format) {
+        public static String GetDateFormat(String format) {
             if (YYYYMMDD.Equals(format)) {
-                return new SimpleDateFormat("yyyyMMdd");
+                return "yyyyMMdd";
             }
             else {
                 if (YYYYMM.Equals(format)) {
-                    return new SimpleDateFormat("yyyyMM");
+                    return "yyyyMM";
                 }
                 else {
                     if (YYYYWW.Equals(format)) {
-                        return new SimpleDateFormat("yyyyww");
+                        return "yyyyww";
                     }
                 }
             }
@@ -81,13 +81,40 @@ namespace iText.Zugferd.Validation.Basic {
 
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         public virtual String ConvertToString(DateTime d, String format) {
-            return GetDateFormat(format).Format(d);
+            String pattern = GetDateFormat(format);
+            if (pattern.Contains("ww")) {
+                // CurrentCulture is here on purpose. In Java, ww format also seems to be locale-dependent
+                DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+                int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, dfi.CalendarWeekRule,
+                    dfi.FirstDayOfWeek);
+                pattern = pattern.Replace("ww", weekNumber.ToString(CultureInfo.InvariantCulture));
+            }
+            return d.ToString(pattern);
         }
 
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         /// <exception cref="Java.Text.ParseException"/>
         public virtual DateTime ConvertToDate(String d, String format) {
-            return GetDateFormat(format).Parse(d);
+            String pattern = GetDateFormat(format);
+            int week = -1;
+            if (pattern.IndexOf("ww") != -1) {
+                int ind = pattern.IndexOf("ww");
+                string weekStr = d.Substring(ind, 2);
+                pattern = pattern.Replace("ww", "");
+                d = d.Substring(0, ind) + d.Substring(ind + 2, d.Length - ind - 2);
+                if (!int.TryParse(weekStr, out week)) {
+                    week = -1;
+                }
+            }
+            DateTime result = DateTime.ParseExact(d, pattern, CultureInfo.CurrentCulture, DateTimeStyles.None);
+            if (week != -1 && !pattern.Contains("d")) {
+                // CurrentCulture is here on purpose. In Java, ww format also seems to be locale-dependent
+                result = result.Add(TimeSpan.FromDays(7*week));
+                CultureInfo ci = System.Threading.Thread.CurrentThread.CurrentCulture;
+                DayOfWeek fdow = ci.DateTimeFormat.FirstDayOfWeek;
+                result = result.AddDays(-(result.DayOfWeek - fdow)).Date;
+            }
+            return result;
         }
     }
 }
