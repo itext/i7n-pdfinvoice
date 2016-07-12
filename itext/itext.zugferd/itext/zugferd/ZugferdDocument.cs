@@ -176,35 +176,15 @@ namespace iText.Zugferd {
             logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
         }
 
-        protected override void UpdateXmpMetadata() {
-            base.UpdateXmpMetadata();
+        protected override void AddCustomMetadataExtensions(XMPMeta xmpMeta) {
+            base.AddCustomMetadataExtensions(xmpMeta);
             try {
-                AddZugferdRdfDescription(zugferdConformanceLevel);
+                AddZugferdRdfDescription(xmpMeta, zugferdConformanceLevel);
             }
             catch (XMPException e) {
                 ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
                 logger.Error(LogMessageConstant.EXCEPTION_WHILE_UPDATING_XMPMETADATA, e);
             }
-        }
-
-        /// <exception cref="iText.Kernel.XMP.XMPException"/>
-        protected internal virtual void AddZugferdRdfDescription(ZugferdConformanceLevel zugferdConformanceLevel) {
-            XMPMeta xmpMeta = XMPMetaFactory.ParseFromBuffer(GetXmpMetadata());
-            switch (zugferdConformanceLevel) {
-                case ZugferdConformanceLevel.ZUGFeRDBasic:
-                case ZugferdConformanceLevel.ZUGFeRDComfort:
-                case ZugferdConformanceLevel.ZUGFeRDExtended: {
-                    XMPMeta taggedExtensionMetaComfort = XMPMetaFactory.ParseFromString(GetZugferdExtension(zugferdConformanceLevel
-                        ));
-                    XMPUtils.AppendProperties(taggedExtensionMetaComfort, xmpMeta, true, false);
-                    break;
-                }
-
-                default: {
-                    break;
-                }
-            }
-            SetXmpMetadata(xmpMeta);
         }
 
         protected override void SetChecker(PdfAConformanceLevel conformanceLevel) {
@@ -220,6 +200,24 @@ namespace iText.Zugferd {
 
         protected override Counter GetCounter() {
             return CounterFactory.GetCounter(typeof(iText.Zugferd.ZugferdDocument));
+        }
+
+        /// <exception cref="iText.Kernel.XMP.XMPException"/>
+        private void AddZugferdRdfDescription(XMPMeta xmpMeta, ZugferdConformanceLevel zugferdConformanceLevel) {
+            switch (zugferdConformanceLevel) {
+                case ZugferdConformanceLevel.ZUGFeRDBasic:
+                case ZugferdConformanceLevel.ZUGFeRDComfort:
+                case ZugferdConformanceLevel.ZUGFeRDExtended: {
+                    XMPMeta taggedExtensionMetaComfort = XMPMetaFactory.ParseFromString(GetZugferdExtension(zugferdConformanceLevel
+                        ));
+                    XMPUtils.AppendProperties(taggedExtensionMetaComfort, xmpMeta, true, false);
+                    break;
+                }
+
+                default: {
+                    break;
+                }
+            }
         }
 
         private String GetZugferdExtension(ZugferdConformanceLevel conformanceLevel) {
