@@ -40,10 +40,14 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com */
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using iText.IO.Util;
 using iText.Zugferd.Exceptions;
 using iText.Zugferd.Profiles;
 using iText.Zugferd.Validation;
@@ -80,6 +84,10 @@ namespace iText.Zugferd {
 
         protected internal readonly XDocument doc;
 
+        private IDictionary<String, XNamespace> nsMapping = new Dictionary<string, XNamespace>();
+        private XNamespace rsm;
+        private XNamespace ram;
+
         /// <summary>Creates an object that will import data into an XML template.</summary>
         /// <param name="data">
         /// If this is an instance of BASICInvoice, the BASIC profile will be used;
@@ -108,9 +116,13 @@ namespace iText.Zugferd {
                 m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
             }
             // loading the XML template
-            doc = XDocument.Load("./src/test/resources/xml/zugferd-template.xml");
+            doc = XDocument.Load(ResourceUtil.GetResourceStream("iText.Zugferd.Xml.zugferd-template.xml", typeof(InvoiceDOM)));
+            XElement root = doc.FirstNode as XElement;
+            nsMapping["rsm"] = rsm = root.GetNamespaceOfPrefix("rsm");
+            nsMapping["udt"] = root.GetNamespaceOfPrefix("udt");
+            nsMapping["ram"] = ram = root.GetNamespaceOfPrefix("ram");
             // importing the data
-            ImportData(doc, data);
+            ImportData(root, data);
         }
 
         private static Type GetClass(string className)
@@ -157,16 +169,16 @@ namespace iText.Zugferd {
         /// <param name="data">the interface that gives us access to the data</param>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
-        private void ImportData(XDocument doc, IBasicProfile data) {
+        private void ImportData(XElement doc, IBasicProfile data) {
             if (!data.GetTestIndicator()) {
                 throw new InvalidCodeException("false",
                     "the test indicator: the ZUGFeRD functionality is still in beta; contact sales@itextpdf.com for more info."
                     );
             }
-            ImportSpecifiedExchangedDocumentContext(doc.Element("{rsm}SpecifiedExchangedDocumentContext"), data);
-            ImportHeaderExchangedDocument(doc.Element("{rsm}HeaderExchangedDocument"), data
+            ImportSpecifiedExchangedDocumentContext(doc.Descendants(rsm + "SpecifiedExchangedDocumentContext").First(), data);
+            ImportHeaderExchangedDocument(doc.Descendants(rsm + "HeaderExchangedDocument").First(), data
                 );
-            ImportSpecifiedSupplyChainTradeTransaction(doc.Element("{rsm}SpecifiedSupplyChainTradeTransaction"), data);
+            ImportSpecifiedSupplyChainTradeTransaction(doc.Descendants(rsm + "SpecifiedSupplyChainTradeTransaction").First(), data);
         }
 
         /// <summary>Imports the data for the following tag: rsm:SpecifiedExchangedDocumentContext</summary>
@@ -221,10 +233,12 @@ namespace iText.Zugferd {
         /// </param>
         protected internal virtual void ImportContent(XElement parent, String tag, String content,
             params String[] attributes) {
-            // TODO namespace
-            XElement node = parent.Element(tag);
+            int colonIndex = tag.IndexOf(":");
+            String ns = colonIndex != -1 ? tag.Substring(0, colonIndex) : null;
+            XName name = ns != null ? nsMapping[ns] + tag.Substring(colonIndex + 1) : tag.Substring(colonIndex + 1);
+            XElement node = parent.Descendants(name).First();
             // content
-            node.Add(new XText(content));
+            node.Add(new XText(content ?? ""));
             // attributes
             if (attributes == null || attributes.Length == 0) {
                 return;
@@ -280,7 +294,7 @@ namespace iText.Zugferd {
             if (notes == null) {
                 return;
             }
-            XElement includedNoteNode = parent.Element("{ram}IncludedNote");
+            XElement includedNoteNode = parent.Descendants(ram + "IncludedNote").First();
             int n = notes.Length;
             FreeTextSubjectCode ftsCode = new FreeTextSubjectCode(level);
             if (notesCodes != null && n != notesCodes.Length) {
@@ -290,14 +304,14 @@ namespace iText.Zugferd {
             }
             for (int i = 0; i < n; i++) {
                 XElement noteNode = new XElement(includedNoteNode);
-                XElement content = noteNode.Element("{ram}:Content");
+                XElement content = noteNode.Descendants(ram + "Content").First();
                 foreach (String note in notes[i]) {
                     XElement newNode = new XElement(content);
                     newNode.Add(new XText(note));
                     content.AddBeforeSelf(newNode);
                 }
                 if (notesCodes != null) {
-                    XElement code = noteNode.Element("{ram}SubjectCode");
+                    XElement code = noteNode.Descendants(ram + "SubjectCode").First();
                     code.Add(new XText(ftsCode.Check(notesCodes[i])));
                 }
                 includedNoteNode.AddBeforeSelf(noteNode);
@@ -334,19 +348,19 @@ namespace iText.Zugferd {
             /* ram:ApplicableSupplyChainTradeDelivery */
             if (comfortData != null) {
                 // BuyerOrderReferencedDocument (optional)
-                XElement document = element.Element("{ram}BuyerOrderReferencedDocument");
+                XElement document = element.Descendants(ram + "BuyerOrderReferencedDocument").First();
                 ImportDateTime(document, "ram:IssueDateTime",
                     comfortData.GetBuyerOrderReferencedDocumentIssueDateTimeFormat
                         (), comfortData.GetBuyerOrderReferencedDocumentIssueDateTime());
                 ImportContent(document, "ram:ID", comfortData.GetBuyerOrderReferencedDocumentID());
                 // ContractReferencedDocument (optional)
-                document = element.Element("{ram}ContractReferencedDocument");
+                document = element.Descendants(ram + "ContractReferencedDocument").First();
                 ImportDateTime(document, "ram:IssueDateTime",
                     comfortData.GetContractReferencedDocumentIssueDateTimeFormat
                         (), comfortData.GetContractReferencedDocumentIssueDateTime());
                 ImportContent(document, "ram:ID", comfortData.GetContractReferencedDocumentID());
                 // CustomerOrderReferencedDocument (optional)
-                document = element.Element("{ram}CustomerOrderReferencedDocument");
+                document = element.Descendants(ram + "CustomerOrderReferencedDocument").First();
                 ImportDateTime(document, "ram:IssueDateTime",
                     comfortData.GetCustomerOrderReferencedDocumentIssueDateTimeFormat
                         (), comfortData.GetCustomerOrderReferencedDocumentIssueDateTime());
@@ -354,11 +368,11 @@ namespace iText.Zugferd {
             }
             /* ram:ApplicableSupplyChainTradeDelivery */
             // ActualDeliverySupplyChainEvent (optional)
-            XElement parent = element.Element("{ram}ActualDeliverySupplyChainEvent");
+            XElement parent = element.Descendants(ram + "ActualDeliverySupplyChainEvent").First();
             ImportDateTime(parent, "udt:DateTimeString", data.GetDeliveryDateTimeFormat(), data.GetDeliveryDateTime());
             // DeliveryNoteReferencedDocument (optional)
             if (comfortData != null) {
-                XElement document = element.Element("{ram}DeliveryNoteReferencedDocument");
+                XElement document = element.Descendants(ram + "DeliveryNoteReferencedDocument").First();
                 ImportDateTime(document, "ram:IssueDateTime",
                     comfortData.GetDeliveryNoteReferencedDocumentIssueDateTimeFormat
                         (), comfortData.GetDeliveryNoteReferencedDocumentIssueDateTime());
@@ -374,19 +388,19 @@ namespace iText.Zugferd {
                 ImportInvoiceeTradeParty(element, comfortData);
             }
             // ram:SpecifiedTradeSettlementPaymentMeans
-            parent = element.Element("{ram}ApplicableSupplyChainTradeSettlement");
+            parent = element.Descendants(ram + "ApplicableSupplyChainTradeSettlement").First();
             ImportPaymentMeans(parent, data);
             // ram:ApplicableTradeTax
             ImportTax(parent, data);
             if (comfortData != null) {
                 // ram:BillingSpecifiedPeriod
-                XElement period = element.Element("{ram}BillingSpecifiedPeriod");
-                XElement start = period.Element("{ram}StartDateTime");
+                XElement period = element.Descendants(ram + "BillingSpecifiedPeriod").First();
+                XElement start = period.Descendants(ram + "StartDateTime").First();
                 ImportDateTime(start, "udt:DateTimeString", comfortData.GetBillingStartDateTimeFormat(),
                     comfortData.GetBillingStartDateTime
                         ());
                 // ContractReferencedDocument (optional)
-                XElement end = period.Element("{ram}EndDateTime");
+                XElement end = period.Descendants(ram + "EndDateTime").First();
                 ImportDateTime(end, "udt:DateTimeString", comfortData.GetBillingEndDateTimeFormat(),
                     comfortData.GetBillingEndDateTime
                         ());
@@ -486,7 +500,7 @@ namespace iText.Zugferd {
             String countryID = data.GetSellerCountryID();
             String[] taxRegistrationID = data.GetSellerTaxRegistrationID();
             String[] taxRegistrationSchemeID = data.GetSellerTaxRegistrationSchemeID();
-            ImportTradeParty((XElement) parent.Element("{ram}SellerTradeParty"), id, globalID, globalIDScheme
+            ImportTradeParty(parent.Descendants(ram + "SellerTradeParty").First(), id, globalID, globalIDScheme
                 , name, postcode, lineOne, lineTwo, cityName, countryID, taxRegistrationID, taxRegistrationSchemeID);
         }
 
@@ -512,7 +526,7 @@ namespace iText.Zugferd {
             String countryID = data.GetBuyerCountryID();
             String[] taxRegistrationID = data.GetBuyerTaxRegistrationID();
             String[] taxRegistrationSchemeID = data.GetBuyerTaxRegistrationSchemeID();
-            ImportTradeParty(parent.Element("{ram}BuyerTradeParty"), id, globalID, globalIDScheme
+            ImportTradeParty(parent.Descendants(ram + "BuyerTradeParty").First(), id, globalID, globalIDScheme
                 , name, postcode, lineOne, lineTwo, cityName, countryID, taxRegistrationID, taxRegistrationSchemeID);
         }
 
@@ -536,7 +550,7 @@ namespace iText.Zugferd {
             String countryID = data.GetInvoiceeCountryID();
             String[] taxRegistrationID = data.GetInvoiceeTaxRegistrationID();
             String[] taxRegistrationSchemeID = data.GetInvoiceeTaxRegistrationSchemeID();
-            ImportTradeParty(parent.Element("{ram}InvoiceeTradeParty"), id, globalID, globalIDScheme
+            ImportTradeParty(parent.Descendants(ram + "InvoiceeTradeParty").First(), id, globalID, globalIDScheme
                 , name, postcode, lineOne, lineTwo, cityName, countryID, taxRegistrationID, taxRegistrationSchemeID);
         }
 
@@ -561,7 +575,7 @@ namespace iText.Zugferd {
                 [] taxRegistrationID, String[] taxRegistrationSchemeID) {
             XElement node;
             if (id != null) {
-                node = parent.Element("{ram}ID");
+                node = parent.Descendants(ram + "ID").First();
                 node.Add(new XText(id));
             }
             if (globalID != null) {
@@ -570,7 +584,7 @@ namespace iText.Zugferd {
                     throw new DataIncompleteException(
                         "Number of global ID schemes is not equal to number of global IDs.");
                 }
-                node = parent.Element("{ram}GlobalID");
+                node = parent.Descendants(ram + "GlobalID").First();
                 for (int i = 0; i < n; i++) {
                     XElement idNode = new XElement(node);
                     idNode.Add(new XText(globalID[i]));
@@ -591,8 +605,8 @@ namespace iText.Zugferd {
             if (taxRegistrationSchemeID != null && taxRegistrationSchemeID.Length != n_1) {
                 throw new DataIncompleteException("Number of tax ID schemes is not equal to number of tax IDs.");
             }
-            XElement tax = parent.Element("{ram}SpecifiedTaxRegistration");
-            node = tax.Element("{ram}ID");
+            XElement tax = parent.Descendants(ram + "SpecifiedTaxRegistration").First();
+            node = tax.Descendants(ram + "ID").First();
             for (int i_1 = 0; i_1 < n_1; i_1++) {
                 XElement idNode = new XElement(node);
                 idNode.Add(new XText(taxRegistrationID[i_1]));
@@ -634,7 +648,7 @@ namespace iText.Zugferd {
                 pmPayerGermanBankleitzahlID = comfortData.GetPaymentMeansPayerFinancialInstitutionGermanBankleitzahlID();
                 pmPayerFinancialInst = comfortData.GetPaymentMeansPayerFinancialInstitutionName();
             }
-            XElement node = parent.Element("{ram}SpecifiedTradeSettlementPaymentMeans");
+            XElement node = parent.Descendants(ram + "SpecifiedTradeSettlementPaymentMeans").First();
             for (int i = 0; i < pmID.Length; i++) {
                 XElement newNode = new XElement(node);
                 this.ImportPaymentMeans(newNode, pmTypeCode[i], pmInformation[i], pmID[i], pmSchemeAgencyID[i],
@@ -671,7 +685,7 @@ namespace iText.Zugferd {
                 ImportContent(parent, "ram:TypeCode", PM_CODE.Check(typeCode));
             }
             if (information != null) {
-                XElement node = parent.Element("{ram}Information");
+                XElement node = parent.Descendants(ram + "Information").First();
                 foreach (String info in information) {
                     XElement newNode = new XElement(node);
                     newNode.Add(new XText(info));
@@ -679,18 +693,18 @@ namespace iText.Zugferd {
                 }
             }
             ImportContent(parent, "ram:ID", id, "schemeAgencyID", scheme);
-            XElement payer = parent.Element("{ram}PayerPartyDebtorFinancialAccount");
+            XElement payer = parent.Descendants(ram + "PayerPartyDebtorFinancialAccount").First();
             ImportContent(payer, "ram:IBANID", payerIban);
             ImportContent(payer, "ram:ProprietaryID", payerProprietaryID);
-            XElement payee = parent.Element("{ram}PayeePartyCreditorFinancialAccount");
+            XElement payee = parent.Descendants(ram + "PayeePartyCreditorFinancialAccount").First();
             ImportContent(payee, "ram:IBANID", iban);
             ImportContent(payee, "ram:AccountName", accName);
             ImportContent(payee, "ram:ProprietaryID", accID);
-            payer = parent.Element("{ram}PayerSpecifiedDebtorFinancialInstitution");
+            payer = parent.Descendants(ram + "PayerSpecifiedDebtorFinancialInstitution").First();
             ImportContent(payer, "ram:BICID", payerBic);
             ImportContent(payer, "ram:GermanBankleitzahlID", payerBank);
             ImportContent(payer, "ram:Name", payerInst);
-            payee = parent.Element("{ram}PayeeSpecifiedCreditorFinancialInstitution");
+            payee = parent.Descendants(ram + "PayeeSpecifiedCreditorFinancialInstitution").First();
             ImportContent(payee, "ram:BICID", bic);
             ImportContent(payee, "ram:GermanBankleitzahlID", bank);
             ImportContent(payee, "ram:Name", inst);
@@ -716,7 +730,7 @@ namespace iText.Zugferd {
                 exemptionReason = comfortData.GetTaxExemptionReason();
                 category = comfortData.GetTaxCategoryCode();
             }
-            XElement node = parent.Element("{ram}ApplicableTradeTax");
+            XElement node = parent.Descendants(ram + "ApplicableTradeTax").First();
             for (int i = 0; i < n; i++) {
                 XElement newNode = new XElement(node);
                 this.ImportTax(newNode, calculated[i], calculatedCurr[i], typeCode[i], exemptionReason[i], basisAmount
@@ -771,7 +785,7 @@ namespace iText.Zugferd {
             String[][] typeCode = data.GetSpecifiedTradeAllowanceChargeTaxTypeCode();
             String[][] categoryCode = data.GetSpecifiedTradeAllowanceChargeTaxCategoryCode();
             String[][] percent = data.GetSpecifiedTradeAllowanceChargeTaxApplicablePercent();
-            XElement node = parent.Element("{ram}SpecifiedTradeAllowanceCharge");
+            XElement node = parent.Descendants(ram + "SpecifiedTradeAllowanceCharge").First();
             for (int i = 0; i < indicator.Length; i++) {
                 XElement newNode = new XElement(node);
                 this.ImportSpecifiedTradeAllowanceCharge(newNode, indicator[i], actualAmount[i], actualAmountCurr
@@ -798,7 +812,7 @@ namespace iText.Zugferd {
                 CURR_CODE.Check(actualAmountCurrency
                     ));
             ImportContent(parent, "ram:Reason", reason);
-            XElement node = parent.Element("{ram}CategoryTradeTax");
+            XElement node = parent.Descendants(ram + "CategoryTradeTax").First();
             for (int i = 0; i < typeCode.Length; i++) {
                 XElement newNode = new XElement(node);
                 ImportContent(newNode, "ram:TypeCode", TT_CODE.Check(typeCode[i]));
@@ -820,7 +834,7 @@ namespace iText.Zugferd {
             String[][] typeCode = data.GetSpecifiedLogisticsServiceChargeTaxTypeCode();
             String[][] categoryCode = data.GetSpecifiedLogisticsServiceChargeTaxCategoryCode();
             String[][] percent = data.GetSpecifiedLogisticsServiceChargeTaxApplicablePercent();
-            XElement node = parent.Element("{ram}SpecifiedLogisticsServiceCharge");
+            XElement node = parent.Descendants(ram + "SpecifiedLogisticsServiceCharge").First();
             for (int i = 0; i < appliedAmount.Length; i++) {
                 XElement newNode = new XElement(node);
                 this.ImportSpecifiedLogisticsServiceCharge(newNode, description[i], appliedAmount[i], appliedAmountCurr
@@ -840,7 +854,7 @@ namespace iText.Zugferd {
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         protected internal virtual void ImportSpecifiedLogisticsServiceCharge(XElement parent, String[] description
             , String appliedAmount, String currencyID, String[] typeCode, String[] categoryCode, String[] percent) {
-            XElement node = parent.Element("{ram}Description");
+            XElement node = parent.Descendants(ram + "Description").First();
             foreach (String d in description) {
                 XElement newNode = new XElement(node);
                 newNode.Add(new XText(d));
@@ -849,7 +863,7 @@ namespace iText.Zugferd {
             ImportContent(parent, "ram:AppliedAmount", DEC4.Check(appliedAmount), "currencyID",
                 CURR_CODE.Check(currencyID
                     ));
-            node = parent.Element("{ram}AppliedTradeTax");
+            node = parent.Descendants(ram + "AppliedTradeTax").First();
             for (int i = 0; i < typeCode.Length; i++) {
                 XElement newNode = new XElement(node);
                 ImportContent(newNode, "ram:TypeCode", TT_CODE.Check(typeCode[i]));
@@ -867,7 +881,7 @@ namespace iText.Zugferd {
             String[][] description = data.GetSpecifiedTradePaymentTermsDescription();
             DateTime[] dateTime = data.GetSpecifiedTradePaymentTermsDueDateTime();
             String[] dateTimeFormat = data.GetSpecifiedTradePaymentTermsDueDateTimeFormat();
-            XElement node = parent.Element("{ram}SpecifiedTradePaymentTerms");
+            XElement node = parent.Descendants(ram + "SpecifiedTradePaymentTerms").First();
             for (int i = 0; i < description.Length; i++) {
                 XElement newNode = new XElement(node);
                 this.ImportSpecifiedTradePaymentTerms(newNode, description[i], dateTime[i], dateTimeFormat[i]);
@@ -883,7 +897,7 @@ namespace iText.Zugferd {
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         protected internal virtual void ImportSpecifiedTradePaymentTerms(XElement parent, String[] description, DateTime
             dateTime, String dateTimeFormat) {
-            XElement node = parent.Element("{ram}Description");
+            XElement node = parent.Descendants(ram + "Description").First();
             foreach (String d in description) {
                 XElement newNode = new XElement(node);
                 newNode.Add(new XText(d));
@@ -938,7 +952,7 @@ namespace iText.Zugferd {
             String[] specifiedTradeProductName = data.GetLineItemSpecifiedTradeProductName();
             // BASIC
             String[] specifiedTradeProductDescription = data.GetLineItemSpecifiedTradeProductDescription();
-            XElement node = parent.Element("{ram}IncludedSupplyChainTradeLineItem");
+            XElement node = parent.Descendants(ram + "IncludedSupplyChainTradeLineItem").First();
             for (int i = 0; i < lineIDs.Length; i++) {
                 XElement newNode = new XElement(node);
                 ImportLineItemComfort(newNode, lineIDs[i], includedNote[i], grossPriceChargeAmount[i],
@@ -1011,13 +1025,13 @@ namespace iText.Zugferd {
             String specifiedTradeProductName
             , String specifiedTradeProductDescription) {
             /* ram:AssociatedDocumentLineDocument */
-            XElement sub = parent.Element("{ram}AssociatedDocumentLineDocument");
+            XElement sub = parent.Descendants(ram + "AssociatedDocumentLineDocument").First();
             ImportContent(sub, "ram:LineID", lineID);
             ImportIncludedNotes(sub, FreeTextSubjectCode.LINE, note, null);
             /* ram:SpecifiedSupplyChainTradeAgreement */
             // ram:GrossPriceProductTradePrice
             if (grossPriceChargeAmount != null) {
-                sub = (XElement) parent.Element("{ram}GrossPriceProductTradePrice");
+                sub = parent.Descendants(ram + "GrossPriceProductTradePrice").First();
                 ImportContent(sub, "ram:ChargeAmount", DEC4.Check(grossPriceChargeAmount), "currencyID",
                     CURR_CODE.Check(grossPriceChargeAmountCurrencyID
                         ));
@@ -1026,7 +1040,7 @@ namespace iText.Zugferd {
                         M_UNIT_CODE.Check
                             (grossPriceBasisQuantityCode));
                 }
-                XElement node = sub.Element("{ram}AppliedTradeAllowanceCharge");
+                XElement node = sub.Descendants(ram + "AppliedTradeAllowanceCharge").First();
                 if (grossPriceTradeAllowanceChargeIndicator != null) {
                     for (int i = 0; i < grossPriceTradeAllowanceChargeIndicator.Length; i++) {
                         XElement newNode = new XElement(node);
@@ -1040,7 +1054,7 @@ namespace iText.Zugferd {
             }
             // ram:NetPriceProductTradePrice
             if (netPriceChargeAmount != null) {
-                sub = parent.Element("{ram}NetPriceProductTradePrice");
+                sub = parent.Descendants(ram + "NetPriceProductTradePrice").First();
                 ImportContent(sub, "ram:ChargeAmount", DEC4.Check(netPriceChargeAmount), "currencyID",
                     CURR_CODE.Check(netPriceChargeAmountCurrencyID
                         ));
@@ -1051,13 +1065,13 @@ namespace iText.Zugferd {
                 }
             }
             /* ram:SpecifiedSupplyChainTradeDelivery */
-            sub = parent.Element("{ram}SpecifiedSupplyChainTradeDelivery");
+            sub = parent.Descendants(ram + "SpecifiedSupplyChainTradeDelivery").First();
             ImportContent(sub, "ram:BilledQuantity", DEC4.Check(billedQuantity), "unitCode",
                 M_UNIT_CODE.Check(billedQuantityCode
                     ));
             /* ram:SpecifiedSupplyChainTradeSettlement */
-            sub = parent.Element("{ram}SpecifiedSupplyChainTradeSettlement");
-            XElement node_1 = sub.Element("{ram}ApplicableTradeTax");
+            sub = parent.Descendants(ram + "SpecifiedSupplyChainTradeSettlement").First();
+            XElement node_1 = sub.Descendants(ram + "ApplicableTradeTax").First();
             for (int i_1 = 0; i_1 < settlementTaxApplicablePercent.Length; i_1++) {
                 XElement newNode = new XElement(node_1);
                 this.ImportTax(newNode, settlementTaxTypeCode[i_1], settlementTaxExemptionReason[i_1],
@@ -1067,7 +1081,7 @@ namespace iText.Zugferd {
             }
             ImportContent(sub, "ram:LineTotalAmount", totalAmount, "currencyID", totalAmountCurrencyID);
             /* ram:SpecifiedTradeProduct */
-            sub = parent.Element("{ram}SpecifiedTradeProduct");
+            sub = parent.Descendants(ram + "SpecifiedTradeProduct").First();
             if (specifiedTradeProductGlobalID != null) {
                 ImportContent(sub, "ram:GlobalID", specifiedTradeProductGlobalID, "schemeID",
                     GI_CODE.Check(specifiedTradeProductSchemeID
@@ -1132,7 +1146,7 @@ namespace iText.Zugferd {
             }
             String[] quantityCode = data.GetLineItemBilledQuantityUnitCode();
             String[] name = data.GetLineItemSpecifiedTradeProductName();
-            XElement node = parent.Element("ram:IncludedSupplyChainTradeLineItem");
+            XElement node = parent.Descendants(ram + "IncludedSupplyChainTradeLineItem").First();
             for (int i = 0; i < quantity.Length; i++) {
                 XElement newNode = new XElement(node);
                 ImportLineItemBasic(newNode, quantity[i], quantityCode[i], name[i]);
@@ -1147,9 +1161,9 @@ namespace iText.Zugferd {
         /// <param name="name"/>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         protected internal virtual void ImportLineItemBasic(XElement parent, String quantity, String code, String name) {
-            XElement sub = parent.Element("{ram}SpecifiedSupplyChainTradeDelivery");
+            XElement sub = parent.Descendants(ram + "SpecifiedSupplyChainTradeDelivery").First();
             ImportContent(sub, "ram:BilledQuantity", DEC4.Check(quantity), "unitCode", M_UNIT_CODE.Check(code));
-            sub = parent.Element("{ram}SpecifiedTradeProduct");
+            sub = parent.Descendants(ram + "SpecifiedTradeProduct").First();
             ImportContent(sub, "ram:Name", name);
         }
 
