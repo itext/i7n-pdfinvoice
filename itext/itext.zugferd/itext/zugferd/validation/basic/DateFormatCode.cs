@@ -41,6 +41,7 @@
     address: sales@itextpdf.com */
 using System;
 using System.Globalization;
+using System.Threading;
 using iText.Zugferd.Exceptions;
 
 namespace iText.Zugferd.Validation.Basic {
@@ -84,7 +85,7 @@ namespace iText.Zugferd.Validation.Basic {
             String pattern = GetDateFormat(format);
             if (pattern.Contains("ww")) {
                 // CurrentCulture is here on purpose. In Java, ww format also seems to be locale-dependent
-                DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+                DateTimeFormatInfo dfi = Thread.CurrentThread.CurrentCulture.DateTimeFormat;
                 int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, dfi.CalendarWeekRule,
                     dfi.FirstDayOfWeek);
                 pattern = pattern.Replace("ww", weekNumber.ToString(CultureInfo.InvariantCulture));
