@@ -40,9 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 using iText.Zugferd.Validation.Basic;
 using NUnit.Framework;
 
@@ -50,14 +48,18 @@ namespace iText.Zugferd {
     public class DateFormatTest {
         [Test]
         public void ToStringTest() {
+            // Set up the culture in order the results to be same across different machines
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-GB");
             DateFormatCode d = new DateFormatCode();
-            Assert.AreEqual("20160708", d.ConvertToString(DateTime.Now, DateFormatCode.YYYYMMDD));
-            Assert.AreEqual("201607", d.ConvertToString(DateTime.Now, DateFormatCode.YYYYMM));
-            Assert.AreEqual("201627", d.ConvertToString(DateTime.Now, DateFormatCode.YYYYWW));
+            Assert.AreEqual("20160708", d.ConvertToString(new DateTime(2016, 07, 08), DateFormatCode.YYYYMMDD));
+            Assert.AreEqual("201607", d.ConvertToString(new DateTime(2016, 07, 08), DateFormatCode.YYYYMM));
+            Assert.AreEqual("201627", d.ConvertToString(new DateTime(2016, 07, 08), DateFormatCode.YYYYWW));
         }
 
         [Test]
         public void FromStringTest() {
+            // Set up the culture in order the results to be same across different machines
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-GB");
             DateFormatCode d = new DateFormatCode();
             Assert.AreEqual(new DateTime(2016, 7, 8), d.ConvertToDate("20160708", DateFormatCode.YYYYMMDD));
             Assert.AreEqual(new DateTime(2016, 7, 1), d.ConvertToDate("201607", DateFormatCode.YYYYMM));
