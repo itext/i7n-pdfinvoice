@@ -84,10 +84,7 @@ namespace iText.Zugferd.Validation.Basic {
         public virtual String ConvertToString(DateTime d, String format) {
             String pattern = GetDateFormat(format);
             if (pattern.Contains("ww")) {
-                // CurrentCulture is here on purpose. In Java, ww format also seems to be locale-dependent
-                DateTimeFormatInfo dfi = Thread.CurrentThread.CurrentCulture.DateTimeFormat;
-                int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, dfi.CalendarWeekRule,
-                    dfi.FirstDayOfWeek);
+                int weekNumber = WeekOfYearISO8601(d);
                 pattern = pattern.Replace("ww", weekNumber.ToString(CultureInfo.InvariantCulture));
             }
             return d.ToString(pattern);
@@ -107,7 +104,7 @@ namespace iText.Zugferd.Validation.Basic {
                     week = -1;
                 }
             }
-            DateTime result = DateTime.ParseExact(d, pattern, CultureInfo.CurrentCulture, DateTimeStyles.None);
+            DateTime result = DateTime.ParseExact(d, pattern, Thread.CurrentThread.CurrentCulture, DateTimeStyles.None);
             if (week != -1 && !pattern.Contains("d")) {
                 // CurrentCulture is here on purpose. In Java, ww format also seems to be locale-dependent
                 result = result.Add(TimeSpan.FromDays(7*week));
@@ -116,6 +113,13 @@ namespace iText.Zugferd.Validation.Basic {
                 result = result.AddDays(-(result.DayOfWeek - fdow)).Date;
             }
             return result;
+        }
+
+        private static int WeekOfYearISO8601(DateTime date) {
+            // CurrentCulture is here on purpose. In Java, ww format also seems to be locale-dependent
+            var day = (int) CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(date);
+            return CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(date.AddDays(4 - (day == 0 ? 7 : day)),
+                CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
     }
 }
