@@ -1172,12 +1172,14 @@ namespace iText.Zugferd {
         /// <returns>a byte[] with the data in XML format</returns>
         /// <exception cref="Javax.Xml.Transform.TransformerException"/>
         public virtual byte[] ToXML() {
-            RemoveEmptyNodes(doc);
+            RemoveEmptyNodes(doc.FirstNode);
             MemoryStream fout = new MemoryStream();
             if (doc != null) {
                 XmlWriterSettings settings = new XmlWriterSettings {
                     Encoding = new UpperCaseUTF8Encoding(false),
-                    OmitXmlDeclaration = !(doc is XDocument)
+                    OmitXmlDeclaration = !(doc is XDocument),
+                    Indent = true,
+                    IndentChars = "    "
                 };
                 XmlWriter writer = XmlTextWriter.Create(fout, settings);
                 doc.WriteTo(writer);
@@ -1193,14 +1195,23 @@ namespace iText.Zugferd {
         /// </summary>
         /// <param name="node">the node from which we want to remove the empty nodes</param>
         protected internal static void RemoveEmptyNodes(XNode node) {
-            if (node is XText)
+            if (node is XText && (node as XText).Value.Trim().Length == 0)
                 node.Remove();
             else if (node is XElement) {
                 XElement el = node as XElement;
-                foreach (XElement child in el.Elements()) {
+                XNode[] children = el.Nodes().ToArray();
+                foreach (XNode child in children) {
                     RemoveEmptyNodes(child);
                 }
-                if (!el.HasElements && !el.HasAttributes) {
+
+                XAttribute[] attrs = el.Attributes().ToArray();
+                foreach (XAttribute attr in attrs) {
+                    if (attr.Value.Trim().Length == 0) {
+                        attr.Remove();
+                    }
+                }
+
+                if (!el.HasAttributes && !el.Nodes().Any()) {
                     el.Remove();
                 }
             }
