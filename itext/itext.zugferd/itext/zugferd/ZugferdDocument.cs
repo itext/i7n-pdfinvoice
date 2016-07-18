@@ -45,19 +45,37 @@ using iText.IO.Log;
 using iText.Kernel.Log;
 using iText.Kernel.Pdf;
 using iText.Kernel.XMP;
-using iText.Pdfa;
-
 using System.Collections.Generic;
 using System.Reflection;
 using Versions.Attributes;
 using System.IO;
+using iText.Pdfa;
+
 namespace iText.Zugferd {
     public class ZugferdDocument : PdfADocument {
+        private const String PRODUCT_NAME = "pdfInvoice";
+        private const int PRODUCT_MAJOR = 1;
+        private const int PRODUCT_MINOR = 0;
+
         private ZugferdConformanceLevel zugferdConformanceLevel;
 
         public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfAConformanceLevel
              pdfaConformanceLevel, PdfOutputIntent outputIntent)
             : base(writer, pdfaConformanceLevel, outputIntent) {
+            String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
+            String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
+            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
+            String checkLicenseKeyMethodName = "ScheduledCheck";
+            Type licenseKeyClass = GetClass(licenseKeyClassName);
+            if ( licenseKeyClass != null ) {
+                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
+                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
+                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
+                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
+                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
+                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
+                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+            }
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";

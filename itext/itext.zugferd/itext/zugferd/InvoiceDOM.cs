@@ -40,7 +40,6 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com */
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,18 +47,22 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using iText.IO.Util;
+using System.Collections.Generic;
+using System.Reflection;
+using Versions.Attributes;
+using System.IO;
 using iText.Zugferd.Exceptions;
 using iText.Zugferd.Profiles;
 using iText.Zugferd.Validation;
 using iText.Zugferd.Validation.Basic;
 using iText.Zugferd.Validation.Comfort;
 
-using System.Collections.Generic;
-using System.Reflection;
-using Versions.Attributes;
-using System.IO;
 namespace iText.Zugferd {
     public class InvoiceDOM {
+        private const String PRODUCT_NAME = "pdfInvoice";
+        private const int PRODUCT_MAJOR = 1;
+        private const int PRODUCT_MINOR = 0;
+
         public static readonly CountryCode COUNTRY_CODE = new CountryCode();
 
         public static readonly CurrencyCode CURR_CODE = new CurrencyCode();
@@ -99,8 +102,6 @@ namespace iText.Zugferd {
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         public InvoiceDOM(IBasicProfile data) {
-            // code checkers
-            // The DOM document
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
@@ -115,6 +116,22 @@ namespace iText.Zugferd {
                 MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                 m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
             }
+            // code checkers
+            String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
+            String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
+            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
+            String checkLicenseKeyMethodName = "ScheduledCheck";
+            Type licenseKeyClass = GetClass(licenseKeyClassName);
+            if ( licenseKeyClass != null ) {
+                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
+                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
+                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
+                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
+                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
+                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
+                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+            }
+            // The DOM document
             // loading the XML template
             doc = XDocument.Load(ResourceUtil.GetResourceStream("iText.Zugferd.Xml.zugferd-template.xml", typeof(InvoiceDOM)));
             XElement root = doc.FirstNode as XElement;
