@@ -54,7 +54,9 @@ using iText.Pdfa;
 namespace iText.Zugferd {
     public class ZugferdDocument : PdfADocument {
         private const String PRODUCT_NAME = "pdfInvoice";
+
         private const int PRODUCT_MAJOR = 1;
+
         private const int PRODUCT_MINOR = 0;
 
         private ZugferdConformanceLevel zugferdConformanceLevel;

@@ -187,11 +187,6 @@ namespace iText.Zugferd {
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
         private void ImportData(XElement doc, IBasicProfile data) {
-            if (!data.GetTestIndicator()) {
-                throw new InvalidCodeException("false",
-                    "the test indicator: the ZUGFeRD functionality is still in beta; contact sales@itextpdf.com for more info."
-                    );
-            }
             ImportSpecifiedExchangedDocumentContext(doc.Descendants(rsm + "SpecifiedExchangedDocumentContext").First(), data);
             ImportHeaderExchangedDocument(doc.Descendants(rsm + "HeaderExchangedDocument").First(), data
                 );

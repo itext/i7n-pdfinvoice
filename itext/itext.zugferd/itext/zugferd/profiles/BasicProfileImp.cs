@@ -51,7 +51,7 @@ namespace iText.Zugferd.Profiles {
     /// conforms with the Basic profile.
     /// </summary>
     public class BasicProfileImp : IBasicProfile {
-        protected internal bool test = true;
+        protected internal bool test;
 
         protected internal String id;
 
@@ -164,7 +164,21 @@ namespace iText.Zugferd.Profiles {
 
         protected internal IList<String> lineItemSpecifiedTradeProductName = new List<String>();
 
-        // member-variables storing all the data
+        /// <summary>
+        /// Creates a new
+        /// <see cref="BasicProfileImp"/>
+        /// instance
+        /// </summary>
+        /// <param name="testIndicator">
+        /// the parameter that determines whether a test invoice is going to be created.
+        /// The test indicator can be used when implementing a newly developed system. It is to mark the
+        /// invoice as a "test" and thus not leading to vat issues.
+        /// </param>
+        public BasicProfileImp(bool testIndicator) {
+            // member-variables storing all the data
+            this.test = testIndicator;
+        }
+
         // implementation of the getters
         public virtual bool GetTestIndicator() {
             return test;

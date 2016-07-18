@@ -232,6 +232,20 @@ namespace iText.Zugferd.Profiles {
 
         protected internal IList<String> lineItemSpecifiedTradeProductDescription = new List<String>();
 
+        /// <summary>
+        /// Creates a new
+        /// <see cref="ComfortProfileImp"/>
+        /// instance
+        /// </summary>
+        /// <param name="testIndicator">
+        /// the parameter that determines whether a test invoice is going to be created.
+        /// The test indicator can be used when implementing a newly developed system. It is to mark the
+        /// invoice as a "test" and thus not leading to vat issues.
+        /// </param>
+        public ComfortProfileImp(bool testIndicator)
+            : base(testIndicator) {
+        }
+
         public virtual String[] GetNotesCodes() {
             return To1DArray(notesCodes);
         }
