@@ -43,13 +43,19 @@ using System;
 using iText.Pdfa;
 
 namespace iText.Zugferd {
+    /// <summary>ZUGFeRD conformance exception</summary>
     public class ZugferdConformanceException : PdfAConformanceException {
         public const String AFRelationshipValueShallbeAlternative = "afrelationship.value.shall.be.alternative";
 
+        /// <summary>Creates ZUGFeRD conformance exception.</summary>
+        /// <param name="message">an exception message.</param>
         public ZugferdConformanceException(String message)
             : base(message) {
         }
 
+        /// <summary>Creates ZUGFeRD conformance exception.</summary>
+        /// <param name="message">the error message</param>
+        /// <param name="object">an object</param>
         public ZugferdConformanceException(String message, Object @object)
             : base(message, @object) {
         }
