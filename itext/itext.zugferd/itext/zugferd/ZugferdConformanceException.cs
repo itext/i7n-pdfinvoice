@@ -45,7 +45,7 @@ using iText.Pdfa;
 namespace iText.Zugferd {
     /// <summary>ZUGFeRD conformance exception</summary>
     public class ZugferdConformanceException : PdfAConformanceException {
-        public const String AFRelationshipValueShallbeAlternative = "afrelationship.value.shall.be.alternative";
+        public const String AFRelationshipValueShallbeAlternative = "AFRelationship value shall be Alternative";
 
         /// <summary>Creates ZUGFeRD conformance exception.</summary>
         /// <param name="message">an exception message.</param>
