@@ -61,6 +61,12 @@ namespace iText.Zugferd {
 
         private ZugferdConformanceLevel zugferdConformanceLevel;
 
+        /// <summary>Create a ZUGFeRD document with the passed ZUGFeRD conformance level, Pdf/A conformance level and output intent using the passed writer.
+        ///     </summary>
+        /// <param name="writer">Writer to output the pdf with</param>
+        /// <param name="zugferdConformanceLevel">ZUGFeRD conformance level, BASIC, COMFORT or EXTENDED</param>
+        /// <param name="pdfaConformanceLevel">Pdf/A conformance level</param>
+        /// <param name="outputIntent">Pdf/A output intent for the document.</param>
         public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfAConformanceLevel
              pdfaConformanceLevel, PdfOutputIntent outputIntent)
             : base(writer, pdfaConformanceLevel, outputIntent) {
@@ -133,6 +139,13 @@ namespace iText.Zugferd {
             return type;
         }
 
+        /// <summary>Create a ZUGFeRD document with the passed ZUGFeRD conformance level and output intent using the passed writer.
+        ///     </summary>
+        /// <remarks>Create a ZUGFeRD document with the passed ZUGFeRD conformance level and output intent using the passed writer. The PdfA Conformance level will be set to Pdf/A-3B.
+        ///     </remarks>
+        /// <param name="writer">Writer to output the pdf with</param>
+        /// <param name="zugferdConformanceLevel">ZUGFeRD conformance level, BASIC, COMFORT or EXTENDED</param>
+        /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfOutputIntent 
             outputIntent)
             : this(writer, zugferdConformanceLevel, PdfAConformanceLevel.PDF_A_3B, outputIntent) {
@@ -154,6 +167,13 @@ namespace iText.Zugferd {
             logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
         }
 
+        /// <summary>Create a ZUGFeRD document with the passed Pdf/A conformance level and output intent using the passed writer.
+        ///     </summary>
+        /// <remarks>Create a ZUGFeRD document with the passed Pdf/A conformance level and output intent using the passed writer. The ZUGFeRD Conformance level will be set to BASIC.
+        ///     </remarks>
+        /// <param name="writer">Writer to output the pdf with</param>
+        /// <param name="pdfaConformanceLevel">Pdf/A conformance level</param>
+        /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, PdfAConformanceLevel pdfaConformanceLevel, PdfOutputIntent outputIntent
             )
             : this(writer, ZugferdConformanceLevel.ZUGFeRDBasic, pdfaConformanceLevel, outputIntent) {
@@ -175,6 +195,11 @@ namespace iText.Zugferd {
             logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
         }
 
+        /// <summary>Create a ZUGFeRD document with the given output intent using given the writer.</summary>
+        /// <remarks>Create a ZUGFeRD document with the given output intent using given the writer. The ZUGFeRD Conformance level will be set to BASIC and the Pdf/A conformance level will be set to Pdf/A-3B.
+        ///     </remarks>
+        /// <param name="writer">Writer to output the pdf with</param>
+        /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, PdfOutputIntent outputIntent)
             : this(writer, ZugferdConformanceLevel.ZUGFeRDBasic, PdfAConformanceLevel.PDF_A_3B, outputIntent) {
             ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
