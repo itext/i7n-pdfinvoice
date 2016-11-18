@@ -74,7 +74,7 @@ namespace iText.Zugferd.Validation {
             if (code.EndsWith(".")) {
                 return false;
             }
-            int pos = code.IndexOf(".");
+            int pos = code.IndexOf(".", StringComparison.Ordinal);
             if (pos < 1) {
                 return false;
             }
