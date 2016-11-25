@@ -40,7 +40,6 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com */
 using System;
-using iText.IO;
 using iText.IO.Log;
 using iText.Kernel.Log;
 using iText.Kernel.Pdf;
@@ -228,7 +227,7 @@ namespace iText.Zugferd {
             }
             catch (XMPException e) {
                 ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
-                logger.Error(LogMessageConstant.EXCEPTION_WHILE_UPDATING_XMPMETADATA, e);
+                logger.Error(iText.IO.LogMessageConstant.EXCEPTION_WHILE_UPDATING_XMPMETADATA, e);
             }
         }
 
