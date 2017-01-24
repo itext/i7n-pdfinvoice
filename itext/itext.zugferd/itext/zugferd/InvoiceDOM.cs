@@ -1193,11 +1193,15 @@ namespace iText.Zugferd {
                     Indent = true,
                     IndentChars = "    "
                 };
-                XmlWriter writer = XmlTextWriter.Create(fout, settings);
+                XmlWriter writer = XmlWriter.Create(fout, settings);
                 doc.WriteTo(writer);
+#if !NETSTANDARD1_6
                 writer.Close();
+#else
+                writer.Dispose();
+#endif
             }
-            fout.Close();
+            fout.Dispose();
             return fout.ToArray();
         }
 

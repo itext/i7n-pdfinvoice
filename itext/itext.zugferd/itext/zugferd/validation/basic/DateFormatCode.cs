@@ -104,11 +104,11 @@ namespace iText.Zugferd.Validation.Basic {
                     week = -1;
                 }
             }
-            DateTime result = DateTime.ParseExact(d, pattern, Thread.CurrentThread.CurrentCulture, DateTimeStyles.None);
+            DateTime result = DateTime.ParseExact(d, pattern, CultureInfo.CurrentCulture, DateTimeStyles.None);
             if (week != -1 && !pattern.Contains("d")) {
                 // CurrentCulture is here on purpose. In Java, ww format also seems to be locale-dependent
                 result = result.Add(TimeSpan.FromDays(7*week));
-                CultureInfo ci = System.Threading.Thread.CurrentThread.CurrentCulture;
+                CultureInfo ci = CultureInfo.CurrentCulture;
                 DayOfWeek fdow = ci.DateTimeFormat.FirstDayOfWeek;
                 result = result.AddDays(-(result.DayOfWeek - fdow)).Date;
             }
