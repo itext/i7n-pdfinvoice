@@ -1,44 +1,45 @@
 /*
-    This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
-    Authors: iText Software.
+This file is part of the iText (R) project.
+Copyright (c) 1998-2017 iText Group NV
+Authors: Bruno Lowagie, et al.
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation with the addition of the
-    following permission added to Section 15 as permitted in Section 7(a):
-    FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
-    ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
-    OF THIRD PARTY RIGHTS
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License version 3
+as published by the Free Software Foundation with the addition of the
+following permission added to Section 15 as permitted in Section 7(a):
+FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+OF THIRD PARTY RIGHTS
 
-    This program is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, see http://www.gnu.org/licenses or write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA, 02110-1301 USA, or download the license from the following URL:
-    http://itextpdf.com/terms-of-use/
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Affero General Public License for more details.
+You should have received a copy of the GNU Affero General Public License
+along with this program; if not, see http://www.gnu.org/licenses or write to
+the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA, 02110-1301 USA, or download the license from the following URL:
+http://itextpdf.com/terms-of-use/
 
-    The interactive user interfaces in modified source and object code versions
-    of this program must display Appropriate Legal Notices, as required under
-    Section 5 of the GNU Affero General Public License.
+The interactive user interfaces in modified source and object code versions
+of this program must display Appropriate Legal Notices, as required under
+Section 5 of the GNU Affero General Public License.
 
-    In accordance with Section 7(b) of the GNU Affero General Public License,
-    a covered work must retain the producer line in every PDF that is created
-    or manipulated using iText.
+In accordance with Section 7(b) of the GNU Affero General Public License,
+a covered work must retain the producer line in every PDF that is created
+or manipulated using iText.
 
-    You can be released from the requirements of the license by purchasing
-    a commercial license. Buying such a license is mandatory as soon as you
-    develop commercial activities involving the iText software without
-    disclosing the source code of your own applications.
-    These activities include: offering paid services to customers as an ASP,
-    serving PDFs on the fly in a web application, shipping iText with a closed
-    source product.
+You can be released from the requirements of the license by purchasing
+a commercial license. Buying such a license is mandatory as soon as you
+develop commercial activities involving the iText software without
+disclosing the source code of your own applications.
+These activities include: offering paid services to customers as an ASP,
+serving PDFs on the fly in a web application, shipping iText with a closed
+source product.
 
-    For more information, please contact iText Software Corp. at this
-    address: sales@itextpdf.com */
+For more information, please contact iText Software Corp. at this
+address: sales@itextpdf.com
+*/
 using System;
 using iText.IO.Log;
 using iText.Kernel.Log;
@@ -51,13 +52,22 @@ using System.IO;
 using iText.Pdfa;
 
 namespace iText.Zugferd {
+    /// <summary>
+    /// The
+    /// <see cref="iText.Pdfa.PdfADocument"/>
+    /// implementation for ZUGFeRD documents (based on PDF/A-3).
+    /// </summary>
     public class ZugferdDocument : PdfADocument {
+        /// <summary>The Constant PRODUCT_NAME.</summary>
         private const String PRODUCT_NAME = "pdfInvoice";
 
+        /// <summary>The Constant PRODUCT_MAJOR.</summary>
         private const int PRODUCT_MAJOR = 1;
 
+        /// <summary>The Constant PRODUCT_MINOR.</summary>
         private const int PRODUCT_MINOR = 0;
 
+        /// <summary>The zugferd conformance level.</summary>
         private ZugferdConformanceLevel zugferdConformanceLevel;
 
         /// <summary>Create a ZUGFeRD document with the passed ZUGFeRD conformance level, Pdf/A conformance level and output intent using the passed writer.
@@ -220,6 +230,9 @@ namespace iText.Zugferd {
             logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
         }
 
+        /* (non-Javadoc)
+        * @see com.itextpdf.pdfa.PdfADocument#addCustomMetadataExtensions(com.itextpdf.kernel.xmp.XMPMeta)
+        */
         protected override void AddCustomMetadataExtensions(XMPMeta xmpMeta) {
             base.AddCustomMetadataExtensions(xmpMeta);
             try {
@@ -231,6 +244,9 @@ namespace iText.Zugferd {
             }
         }
 
+        /* (non-Javadoc)
+        * @see com.itextpdf.pdfa.PdfADocument#setChecker(com.itextpdf.kernel.pdf.PdfAConformanceLevel)
+        */
         protected override void SetChecker(PdfAConformanceLevel conformanceLevel) {
             if (!conformanceLevel.Equals(PdfAConformanceLevel.PDF_A_3B)) {
                 ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
@@ -242,11 +258,17 @@ namespace iText.Zugferd {
             }
         }
 
+        /* (non-Javadoc)
+        * @see com.itextpdf.pdfa.PdfADocument#getCounter()
+        */
         protected override Counter GetCounter() {
             return CounterFactory.GetCounter(typeof(iText.Zugferd.ZugferdDocument));
         }
 
-        /// <exception cref="iText.Kernel.XMP.XMPException"/>
+        /// <summary>Adds the zugferd rdf description.</summary>
+        /// <param name="xmpMeta">the xmp meta</param>
+        /// <param name="zugferdConformanceLevel">the zugferd conformance level</param>
+        /// <exception cref="iText.Kernel.XMP.XMPException">the XMP exception</exception>
         private void AddZugferdRdfDescription(XMPMeta xmpMeta, ZugferdConformanceLevel zugferdConformanceLevel) {
             switch (zugferdConformanceLevel) {
                 case ZugferdConformanceLevel.ZUGFeRDBasic:
@@ -264,6 +286,9 @@ namespace iText.Zugferd {
             }
         }
 
+        /// <summary>Gets the zugferd extension.</summary>
+        /// <param name="conformanceLevel">the conformance level</param>
+        /// <returns>the zugferd extension</returns>
         private String GetZugferdExtension(ZugferdConformanceLevel conformanceLevel) {
             switch (conformanceLevel) {
                 case ZugferdConformanceLevel.ZUGFeRDBasic: {
