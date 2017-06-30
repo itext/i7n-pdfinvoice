@@ -41,6 +41,7 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
+using iText.IO.Util;
 
 namespace iText.Zugferd.Exceptions {
     /// <summary>
@@ -57,7 +58,7 @@ namespace iText.Zugferd.Exceptions {
         /// <param name="code">the code</param>
         /// <param name="context">the context</param>
         public InvalidCodeException(String code, String context)
-            : base(String.Format("{0} is an invalid code for {1}", code, context)) {
+            : base(MessageFormatUtil.Format("{0} is an invalid code for {1}", code, context)) {
         }
     }
 }

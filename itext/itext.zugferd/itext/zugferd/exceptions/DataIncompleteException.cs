@@ -41,6 +41,7 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
+using iText.IO.Util;
 
 namespace iText.Zugferd.Exceptions {
     /// <summary>
@@ -51,7 +52,7 @@ namespace iText.Zugferd.Exceptions {
         /// <summary>Instantiates a new data incomplete exception.</summary>
         /// <param name="tag">the tag</param>
         public DataIncompleteException(String tag)
-            : base(String.Format("The data is missing: {0}", tag)) {
+            : base(MessageFormatUtil.Format("The data is missing: {0}", tag)) {
         }
     }
 }
