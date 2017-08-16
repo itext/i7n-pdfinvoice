@@ -40,11 +40,33 @@ source product.
 For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
+using System;
+
 namespace iText.Zugferd {
     /// <summary>Enumeration of the three possible conformance levels for ZUGFeRD.</summary>
-    public enum ZugferdConformanceLevel {
-        ZUGFeRDBasic,
-        ZUGFeRDComfort,
-        ZUGFeRDExtended
+    public sealed class ZugferdConformanceLevel {
+        /// <summary>Conformance level for the Basic profile.</summary>
+        public static readonly iText.Zugferd.ZugferdConformanceLevel ZUGFeRDBasic = new iText.Zugferd.ZugferdConformanceLevel
+            ("BASIC");
+
+        /// <summary>Conformance level for the Comfort profile.</summary>
+        public static readonly iText.Zugferd.ZugferdConformanceLevel ZUGFeRDComfort = new iText.Zugferd.ZugferdConformanceLevel
+            ("COMFORT");
+
+        /// <summary>Conformance level for the Extended profile.</summary>
+        public static readonly iText.Zugferd.ZugferdConformanceLevel ZUGFeRDExtended = new iText.Zugferd.ZugferdConformanceLevel
+            ("EXTENDED");
+
+        internal ZugferdConformanceLevel(String value) {
+            this.value = value;
+        }
+
+        /// <summary>Returns the value of the enum.</summary>
+        /// <returns>value of the enum</returns>
+        public String GetValue() {
+            return iText.Zugferd.ZugferdConformanceLevel.value;
+        }
+
+        private String value;
     }
 }

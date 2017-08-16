@@ -44,7 +44,7 @@ using System;
 using iText.Pdfa;
 
 namespace iText.Zugferd {
-    /// <summary>The Class ZugferdXMPUtil.</summary>
+    /// <summary>Class containing constants used in the XMP of a ZUGFeRD document.</summary>
     public class ZugferdXMPUtil : PdfAXMPUtil {
         /// <summary>The Constant ZUGFERD_EXTENSION.</summary>
         public const String ZUGFERD_EXTENSION = "    <x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" + "      <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"

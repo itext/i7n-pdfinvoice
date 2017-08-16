@@ -52,11 +52,14 @@ using System.IO;
 using iText.Pdfa;
 
 namespace iText.Zugferd {
-    /// <summary>
-    /// The
+    /// <summary>ZUGFeRD documents need to be PDF/A-3 compliant.</summary>
+    /// <remarks>
+    /// ZUGFeRD documents need to be PDF/A-3 compliant. This class inherits from the iText 7
     /// <see cref="iText.Pdfa.PdfADocument"/>
-    /// implementation for ZUGFeRD documents (based on PDF/A-3).
-    /// </summary>
+    /// implementation
+    /// for convenience. The PdfADocument class will handle all of the PDF/A-3 compliance, while this class will handle the
+    /// ZUGFeRD compliance.
+    /// </remarks>
     public class ZugferdDocument : PdfADocument {
         /// <summary>The Constant PRODUCT_NAME.</summary>
         private const String PRODUCT_NAME = "pdfInvoice";
@@ -67,15 +70,16 @@ namespace iText.Zugferd {
         /// <summary>The Constant PRODUCT_MINOR.</summary>
         private const int PRODUCT_MINOR = 0;
 
-        /// <summary>The zugferd conformance level.</summary>
+        /// <summary>The ZUGFeRD conformance level.</summary>
         private ZugferdConformanceLevel zugferdConformanceLevel;
 
-        /// <summary>Create a ZUGFeRD document with the passed ZUGFeRD conformance level, Pdf/A conformance level and output intent using the passed writer.
+        /// <summary>Creates a ZUGFeRD document with the passed ZUGFeRD conformance level, PDF/A conformance level and output intent using the passed writer.
         ///     </summary>
-        /// <param name="writer">Writer to output the pdf with</param>
-        /// <param name="zugferdConformanceLevel">ZUGFeRD conformance level, BASIC, COMFORT or EXTENDED</param>
-        /// <param name="pdfaConformanceLevel">Pdf/A conformance level</param>
-        /// <param name="outputIntent">Pdf/A output intent for the document.</param>
+        /// <param name="writer">Writer to output the PDF</param>
+        /// <param name="zugferdConformanceLevel">ZUGFeRD conformance level, one of  the following: BASIC, COMFORT or EXTENDED
+        ///     </param>
+        /// <param name="pdfaConformanceLevel">PDF/A conformance level</param>
+        /// <param name="outputIntent">PDF/A output intent for the document.</param>
         public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfAConformanceLevel
              pdfaConformanceLevel, PdfOutputIntent outputIntent)
             : base(writer, pdfaConformanceLevel, outputIntent) {
@@ -148,11 +152,11 @@ namespace iText.Zugferd {
             return type;
         }
 
-        /// <summary>Create a ZUGFeRD document with the passed ZUGFeRD conformance level and output intent using the passed writer.
+        /// <summary>Creates a ZUGFeRD document with the passed ZUGFeRD conformance level and output intent using the passed writer.
         ///     </summary>
-        /// <remarks>Create a ZUGFeRD document with the passed ZUGFeRD conformance level and output intent using the passed writer. The PdfA Conformance level will be set to Pdf/A-3B.
+        /// <remarks>Creates a ZUGFeRD document with the passed ZUGFeRD conformance level and output intent using the passed writer. The PdfAConformanceLevel will be set to PDF/A-3B.
         ///     </remarks>
-        /// <param name="writer">Writer to output the pdf with</param>
+        /// <param name="writer">Writer to output the pdf</param>
         /// <param name="zugferdConformanceLevel">ZUGFeRD conformance level, BASIC, COMFORT or EXTENDED</param>
         /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfOutputIntent 
@@ -176,11 +180,11 @@ namespace iText.Zugferd {
             logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
         }
 
-        /// <summary>Create a ZUGFeRD document with the passed Pdf/A conformance level and output intent using the passed writer.
+        /// <summary>Creates a ZUGFeRD document with the passed Pdf/A conformance level and output intent using the passed writer.
         ///     </summary>
-        /// <remarks>Create a ZUGFeRD document with the passed Pdf/A conformance level and output intent using the passed writer. The ZUGFeRD Conformance level will be set to BASIC.
+        /// <remarks>Creates a ZUGFeRD document with the passed Pdf/A conformance level and output intent using the passed writer. The ZUGFeRD Conformance level will be set to BASIC.
         ///     </remarks>
-        /// <param name="writer">Writer to output the pdf with</param>
+        /// <param name="writer">Writer to output the pdf</param>
         /// <param name="pdfaConformanceLevel">Pdf/A conformance level</param>
         /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, PdfAConformanceLevel pdfaConformanceLevel, PdfOutputIntent outputIntent
@@ -205,9 +209,9 @@ namespace iText.Zugferd {
         }
 
         /// <summary>Create a ZUGFeRD document with the given output intent using given the writer.</summary>
-        /// <remarks>Create a ZUGFeRD document with the given output intent using given the writer. The ZUGFeRD Conformance level will be set to BASIC and the Pdf/A conformance level will be set to Pdf/A-3B.
+        /// <remarks>Create a ZUGFeRD document with the given output intent using given the writer. The ZUGFeRD Conformance level will be set to BASIC and the Pdf/A conformance level will be set to PDF/A-3B.
         ///     </remarks>
-        /// <param name="writer">Writer to output the pdf with</param>
+        /// <param name="writer">Writer to output the pdf</param>
         /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, PdfOutputIntent outputIntent)
             : this(writer, ZugferdConformanceLevel.ZUGFeRDBasic, PdfAConformanceLevel.PDF_A_3B, outputIntent) {
@@ -265,7 +269,7 @@ namespace iText.Zugferd {
             return CounterFactory.GetCounter(typeof(iText.Zugferd.ZugferdDocument));
         }
 
-        /// <summary>Adds the zugferd rdf description.</summary>
+        /// <summary>Adds the ZUGFeRD RDF description.</summary>
         /// <param name="xmpMeta">the xmp meta</param>
         /// <param name="zugferdConformanceLevel">the zugferd conformance level</param>
         /// <exception cref="iText.Kernel.XMP.XMPException">the XMP exception</exception>
@@ -274,6 +278,8 @@ namespace iText.Zugferd {
                 case ZugferdConformanceLevel.ZUGFeRDBasic:
                 case ZugferdConformanceLevel.ZUGFeRDComfort:
                 case ZugferdConformanceLevel.ZUGFeRDExtended: {
+                    // fallthrough
+                    // fallthrough
                     XMPMeta taggedExtensionMetaComfort = XMPMetaFactory.ParseFromString(GetZugferdExtension(zugferdConformanceLevel
                         ));
                     XMPUtils.AppendProperties(taggedExtensionMetaComfort, xmpMeta, true, false);
@@ -286,21 +292,21 @@ namespace iText.Zugferd {
             }
         }
 
-        /// <summary>Gets the zugferd extension.</summary>
+        /// <summary>Gets the ZUGFeRD extension.</summary>
         /// <param name="conformanceLevel">the conformance level</param>
-        /// <returns>the zugferd extension</returns>
+        /// <returns>the ZUGFeRD extension</returns>
         private String GetZugferdExtension(ZugferdConformanceLevel conformanceLevel) {
             switch (conformanceLevel) {
                 case ZugferdConformanceLevel.ZUGFeRDBasic: {
-                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "BASIC");
+                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, conformanceLevel.GetValue());
                 }
 
                 case ZugferdConformanceLevel.ZUGFeRDComfort: {
-                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "COMFORT");
+                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, conformanceLevel.GetValue());
                 }
 
                 case ZugferdConformanceLevel.ZUGFeRDExtended: {
-                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "EXTENDED");
+                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, conformanceLevel.GetValue());
                 }
 
                 default: {
