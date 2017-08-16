@@ -284,15 +284,15 @@ namespace iText.Zugferd {
         private String GetZugferdExtension(ZugferdConformanceLevel conformanceLevel) {
             switch (conformanceLevel) {
                 case ZugferdConformanceLevel.ZUGFeRDBasic: {
-                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, conformanceLevel.GetValue());
+                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "BASIC");
                 }
 
                 case ZugferdConformanceLevel.ZUGFeRDComfort: {
-                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, conformanceLevel.GetValue());
+                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "COMFORT");
                 }
 
                 case ZugferdConformanceLevel.ZUGFeRDExtended: {
-                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, conformanceLevel.GetValue());
+                    return String.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "EXTENDED");
                 }
 
                 default: {
