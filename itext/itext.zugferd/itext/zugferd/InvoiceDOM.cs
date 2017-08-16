@@ -60,7 +60,7 @@ using iText.Zugferd.Validation.Comfort;
 
 namespace iText.Zugferd {
     /// <summary>
-    /// The Class InvoiceDOM.
+    /// Represents the DOM structure of a ZUGFeRD invoice. It will load the data from the IBasicProfile implementation. This class is also responsible to transform this dom structure into an XML.
     /// </summary>
     public class InvoiceDOM {
         private const String PRODUCT_NAME = "pdfInvoice";
