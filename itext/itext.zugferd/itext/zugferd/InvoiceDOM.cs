@@ -104,21 +104,8 @@ namespace iText.Zugferd {
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         public InvoiceDOM(IBasicProfile data) {
-            String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
-            String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
-            String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
-            }
             // code checkers
+            // The DOM document
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
@@ -133,7 +120,6 @@ namespace iText.Zugferd {
                 MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                 m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
             }
-            // The DOM document
             // loading the XML template
             doc = XDocument.Load(ResourceUtil.GetResourceStream("iText.Zugferd.Xml.zugferd-template.xml", typeof(InvoiceDOM)));
             XElement root = doc.FirstNode as XElement;
