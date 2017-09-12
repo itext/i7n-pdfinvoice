@@ -283,23 +283,17 @@ namespace iText.Zugferd {
         /// <param name="conformanceLevel">the conformance level</param>
         /// <returns>the ZUGFeRD extension</returns>
         private String GetZugferdExtension(ZugferdConformanceLevel conformanceLevel) {
-            // For the sake of porting to .NET we shall use MessageFormatUtil.format syntax, instead of
-            // the String.format one. As ZugferdXMPUtil.ZUGFERD_EXTENSION is a public final field, changing it
-            // is might be a binary backward compatibility breakage in some way, thus we fix it here in programmatic way.
-            // This will be removed in iText 7.1.
-            String zugferdExtensionFixedForMultiplatformHandling = ZugferdXMPUtil.ZUGFERD_EXTENSION.Replace("%s", "{0}"
-                );
             switch (conformanceLevel) {
                 case ZugferdConformanceLevel.ZUGFeRDBasic: {
-                    return MessageFormatUtil.Format(zugferdExtensionFixedForMultiplatformHandling, "BASIC");
+                    return MessageFormatUtil.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "BASIC");
                 }
 
                 case ZugferdConformanceLevel.ZUGFeRDComfort: {
-                    return MessageFormatUtil.Format(zugferdExtensionFixedForMultiplatformHandling, "COMFORT");
+                    return MessageFormatUtil.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "COMFORT");
                 }
 
                 case ZugferdConformanceLevel.ZUGFeRDExtended: {
-                    return MessageFormatUtil.Format(zugferdExtensionFixedForMultiplatformHandling, "EXTENDED");
+                    return MessageFormatUtil.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "EXTENDED");
                 }
 
                 default: {

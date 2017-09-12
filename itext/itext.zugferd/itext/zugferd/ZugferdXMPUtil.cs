@@ -49,7 +49,7 @@ namespace iText.Zugferd {
         /// <summary>The Constant ZUGFERD_EXTENSION.</summary>
         public const String ZUGFERD_EXTENSION = "    <x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" + "      <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"
              + "        <rdf:Description rdf:about=\"\" xmlns:zf=\"urn:ferd:pdfa:CrossIndustryDocument:invoice:1p0#\">\n"
-             + "          <zf:ConformanceLevel>%s</zf:ConformanceLevel>\n" + "          <zf:DocumentFileName>ZUGFeRD-invoice.xml</zf:DocumentFileName>\n"
+             + "          <zf:ConformanceLevel>{0}</zf:ConformanceLevel>\n" + "          <zf:DocumentFileName>ZUGFeRD-invoice.xml</zf:DocumentFileName>\n"
              + "          <zf:DocumentType>INVOICE</zf:DocumentType>\n" + "          <zf:Version>1.0</zf:Version>\n"
              + "        </rdf:Description>\n" + "        <rdf:Description rdf:about=\"\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\">\n"
              + "          <pdfaExtension:schemas>\n" + "            <rdf:Bag>\n" + "              <rdf:li rdf:parseType=\"Resource\">\n"
