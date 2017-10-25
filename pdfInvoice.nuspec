@@ -16,12 +16,13 @@
     <copyright>Copyright (c) 1998-2017 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itext7 itextsharp c# .net csharp pdf zugferd pdfinvoice</tags>
-	<dependencies>
+    <dependencies>
       <dependency id="itext7" version="7.1.0-SNAPSHOT" />
+      <dependency id="Common.Logging" version="3.4.1" />
     </dependencies>
   </metadata>
   <files>
-	<file src="itext\itext.zugferd\bin\Release\itext.zugferd.dll" target="lib\net40" />
-	<file src="itext\itext.zugferd\bin\Release\itext.zugferd.xml" target="lib\net40" />
+    <file src="itext\itext.zugferd\bin\Release\itext.zugferd.dll" target="lib\net40" />
+    <file src="itext\itext.zugferd\bin\Release\itext.zugferd.xml" target="lib\net40" />
   </files>
 </package>

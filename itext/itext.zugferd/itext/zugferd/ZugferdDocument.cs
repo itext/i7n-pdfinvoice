@@ -41,7 +41,7 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
-using iText.IO.Log;
+using Common.Logging;
 using iText.IO.Util;
 using iText.Kernel.Log;
 using iText.Kernel.Pdf;
@@ -163,7 +163,7 @@ namespace iText.Zugferd {
                 MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                 m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
             }
-            ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
         }
 
@@ -191,7 +191,7 @@ namespace iText.Zugferd {
                 MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                 m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
             }
-            ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
         }
 
@@ -202,7 +202,7 @@ namespace iText.Zugferd {
         /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, PdfOutputIntent outputIntent)
             : this(writer, ZugferdConformanceLevel.ZUGFeRDBasic, PdfAConformanceLevel.PDF_A_3B, outputIntent) {
-            ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
@@ -230,7 +230,7 @@ namespace iText.Zugferd {
                 AddZugferdRdfDescription(xmpMeta, zugferdConformanceLevel);
             }
             catch (XMPException e) {
-                ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+                ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
                 logger.Error(iText.IO.LogMessageConstant.EXCEPTION_WHILE_UPDATING_XMPMETADATA, e);
             }
         }
@@ -240,7 +240,7 @@ namespace iText.Zugferd {
         */
         protected override void SetChecker(PdfAConformanceLevel conformanceLevel) {
             if (!conformanceLevel.Equals(PdfAConformanceLevel.PDF_A_3B)) {
-                ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+                ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
                 logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
                 checker = new ZugferdChecker(PdfAConformanceLevel.PDF_A_3B);
             }
