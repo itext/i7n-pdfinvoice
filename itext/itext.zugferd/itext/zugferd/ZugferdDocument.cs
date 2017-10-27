@@ -104,7 +104,7 @@ namespace iText.Zugferd {
         private static Type GetClass(string className)
         {
             String licenseKeyClassFullName = null;
-            Assembly assembly = typeof(ZugferdDocument).Assembly;
+            Assembly assembly = typeof(ZugferdDocument).GetAssembly();
             Attribute keyVersionAttr = assembly.GetCustomAttribute(typeof(KeyVersionAttribute));
             if (keyVersionAttr is KeyVersionAttribute)
             {
