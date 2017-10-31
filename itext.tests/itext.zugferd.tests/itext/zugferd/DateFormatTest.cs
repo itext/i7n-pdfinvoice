@@ -49,7 +49,11 @@ namespace iText.Zugferd {
         [Test]
         public void ToStringTest() {
             // Set up the culture in order the results to be same across different machines
-            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-GB");
+#if !NETSTANDARD1_6
+            System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
+#else
+            CultureInfo.CurrentCulture = new CultureInfo("en-GB");
+#endif
             DateFormatCode d = new DateFormatCode();
             Assert.AreEqual("20160708", d.ConvertToString(new DateTime(2016, 07, 08), DateFormatCode.YYYYMMDD));
             Assert.AreEqual("201607", d.ConvertToString(new DateTime(2016, 07, 08), DateFormatCode.YYYYMM));
@@ -59,7 +63,11 @@ namespace iText.Zugferd {
         [Test]
         public void FromStringTest() {
             // Set up the culture in order the results to be same across different machines
-            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-GB");
+#if !NETSTANDARD1_6
+            System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
+#else
+            CultureInfo.CurrentCulture = new CultureInfo("en-GB");
+#endif
             DateFormatCode d = new DateFormatCode();
             Assert.AreEqual(new DateTime(2016, 7, 8), d.ConvertToDate("20160708", DateFormatCode.YYYYMMDD));
             Assert.AreEqual(new DateTime(2016, 7, 1), d.ConvertToDate("201607", DateFormatCode.YYYYMM));

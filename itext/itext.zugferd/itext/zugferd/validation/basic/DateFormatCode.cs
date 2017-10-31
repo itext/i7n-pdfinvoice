@@ -1,44 +1,45 @@
 /*
-    This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
-    Authors: iText Software.
+This file is part of the iText (R) project.
+Copyright (c) 1998-2017 iText Group NV
+Authors: Bruno Lowagie, et al.
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation with the addition of the
-    following permission added to Section 15 as permitted in Section 7(a):
-    FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
-    ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
-    OF THIRD PARTY RIGHTS
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License version 3
+as published by the Free Software Foundation with the addition of the
+following permission added to Section 15 as permitted in Section 7(a):
+FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+OF THIRD PARTY RIGHTS
 
-    This program is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, see http://www.gnu.org/licenses or write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA, 02110-1301 USA, or download the license from the following URL:
-    http://itextpdf.com/terms-of-use/
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Affero General Public License for more details.
+You should have received a copy of the GNU Affero General Public License
+along with this program; if not, see http://www.gnu.org/licenses or write to
+the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA, 02110-1301 USA, or download the license from the following URL:
+http://itextpdf.com/terms-of-use/
 
-    The interactive user interfaces in modified source and object code versions
-    of this program must display Appropriate Legal Notices, as required under
-    Section 5 of the GNU Affero General Public License.
+The interactive user interfaces in modified source and object code versions
+of this program must display Appropriate Legal Notices, as required under
+Section 5 of the GNU Affero General Public License.
 
-    In accordance with Section 7(b) of the GNU Affero General Public License,
-    a covered work must retain the producer line in every PDF that is created
-    or manipulated using iText.
+In accordance with Section 7(b) of the GNU Affero General Public License,
+a covered work must retain the producer line in every PDF that is created
+or manipulated using iText.
 
-    You can be released from the requirements of the license by purchasing
-    a commercial license. Buying such a license is mandatory as soon as you
-    develop commercial activities involving the iText software without
-    disclosing the source code of your own applications.
-    These activities include: offering paid services to customers as an ASP,
-    serving PDFs on the fly in a web application, shipping iText with a closed
-    source product.
+You can be released from the requirements of the license by purchasing
+a commercial license. Buying such a license is mandatory as soon as you
+develop commercial activities involving the iText software without
+disclosing the source code of your own applications.
+These activities include: offering paid services to customers as an ASP,
+serving PDFs on the fly in a web application, shipping iText with a closed
+source product.
 
-    For more information, please contact iText Software Corp. at this
-    address: sales@itextpdf.com */
+For more information, please contact iText Software Corp. at this
+address: sales@itextpdf.com
+*/
 using System;
 using System.Globalization;
 using System.Threading;
@@ -52,12 +53,26 @@ namespace iText.Zugferd.Validation.Basic {
     /// to convert dates to strings and vice-versa based on a given format.
     /// </remarks>
     public class DateFormatCode : CodeValidation {
+        /// <summary>
+        /// The Constant YYYYMMDD.
+        /// </summary>
         public const String YYYYMMDD = "102";
 
+        /// <summary>
+        /// The Constant YYYYMM.
+        /// </summary>
         public const String YYYYMM = "610";
 
+        /// <summary>
+        /// The Constant YYYYWW.
+        /// </summary>
         public const String YYYYWW = "616";
 
+        /// <summary>
+        /// Gets the date format
+        /// </summary>
+        /// <param name="format">the format</param>
+        /// <returns>the date format</returns>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         public static String GetDateFormat(String format) {
             if (YYYYMMDD.Equals(format)) {
@@ -76,10 +91,19 @@ namespace iText.Zugferd.Validation.Basic {
             throw new InvalidCodeException(format, "date format");
         }
 
+        /* (non-Javadoc)
+        * @see com.itextpdf.zugferd.validation.CodeValidation#isValid(java.lang.String)
+        */
         public override bool IsValid(String format) {
             return format.Equals(YYYYMMDD) || format.Equals(YYYYMM) || format.Equals(YYYYWW);
         }
 
+        /// <summary>
+        /// Converts a date to a string.
+        /// </summary>
+        /// <param name="d">the date</param>
+        /// <param name="format">format the format</param>
+        /// <returns>the resulting string</returns>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         public virtual String ConvertToString(DateTime d, String format) {
             String pattern = GetDateFormat(format);
@@ -90,8 +114,12 @@ namespace iText.Zugferd.Validation.Basic {
             return d.ToString(pattern);
         }
 
-        /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
-        /// <exception cref="Java.Text.ParseException"/>
+        /// <summary>
+        /// Converts a string to a date in a specific format.
+        /// </summary>
+        /// <param name="d">the date</param>
+        /// <param name="format">the format</param>
+        /// <returns>the resulting string</returns>
         public virtual DateTime ConvertToDate(String d, String format) {
             String pattern = GetDateFormat(format);
             int week = -1;
@@ -104,11 +132,11 @@ namespace iText.Zugferd.Validation.Basic {
                     week = -1;
                 }
             }
-            DateTime result = DateTime.ParseExact(d, pattern, Thread.CurrentThread.CurrentCulture, DateTimeStyles.None);
+            DateTime result = DateTime.ParseExact(d, pattern, CultureInfo.CurrentCulture, DateTimeStyles.None);
             if (week != -1 && !pattern.Contains("d")) {
                 // CurrentCulture is here on purpose. In Java, ww format also seems to be locale-dependent
                 result = result.Add(TimeSpan.FromDays(7*week));
-                CultureInfo ci = System.Threading.Thread.CurrentThread.CurrentCulture;
+                CultureInfo ci = CultureInfo.CurrentCulture;
                 DayOfWeek fdow = ci.DateTimeFormat.FirstDayOfWeek;
                 result = result.AddDays(-(result.DayOfWeek - fdow)).Date;
             }

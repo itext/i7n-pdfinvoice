@@ -1,44 +1,45 @@
 /*
-    This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
-    Authors: iText Software.
+This file is part of the iText (R) project.
+Copyright (c) 1998-2017 iText Group NV
+Authors: Bruno Lowagie, et al.
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation with the addition of the
-    following permission added to Section 15 as permitted in Section 7(a):
-    FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
-    ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
-    OF THIRD PARTY RIGHTS
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License version 3
+as published by the Free Software Foundation with the addition of the
+following permission added to Section 15 as permitted in Section 7(a):
+FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+OF THIRD PARTY RIGHTS
 
-    This program is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, see http://www.gnu.org/licenses or write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA, 02110-1301 USA, or download the license from the following URL:
-    http://itextpdf.com/terms-of-use/
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Affero General Public License for more details.
+You should have received a copy of the GNU Affero General Public License
+along with this program; if not, see http://www.gnu.org/licenses or write to
+the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA, 02110-1301 USA, or download the license from the following URL:
+http://itextpdf.com/terms-of-use/
 
-    The interactive user interfaces in modified source and object code versions
-    of this program must display Appropriate Legal Notices, as required under
-    Section 5 of the GNU Affero General Public License.
+The interactive user interfaces in modified source and object code versions
+of this program must display Appropriate Legal Notices, as required under
+Section 5 of the GNU Affero General Public License.
 
-    In accordance with Section 7(b) of the GNU Affero General Public License,
-    a covered work must retain the producer line in every PDF that is created
-    or manipulated using iText.
+In accordance with Section 7(b) of the GNU Affero General Public License,
+a covered work must retain the producer line in every PDF that is created
+or manipulated using iText.
 
-    You can be released from the requirements of the license by purchasing
-    a commercial license. Buying such a license is mandatory as soon as you
-    develop commercial activities involving the iText software without
-    disclosing the source code of your own applications.
-    These activities include: offering paid services to customers as an ASP,
-    serving PDFs on the fly in a web application, shipping iText with a closed
-    source product.
+You can be released from the requirements of the license by purchasing
+a commercial license. Buying such a license is mandatory as soon as you
+develop commercial activities involving the iText software without
+disclosing the source code of your own applications.
+These activities include: offering paid services to customers as an ASP,
+serving PDFs on the fly in a web application, shipping iText with a closed
+source product.
 
-    For more information, please contact iText Software Corp. at this
-    address: sales@itextpdf.com */
+For more information, please contact iText Software Corp. at this
+address: sales@itextpdf.com
+*/
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,6 +59,9 @@ using iText.Zugferd.Validation.Basic;
 using iText.Zugferd.Validation.Comfort;
 
 namespace iText.Zugferd {
+    /// <summary>
+    /// Represents the DOM structure of a ZUGFeRD invoice. It will load the data from the IBasicProfile implementation. This class is also responsible to transform this dom structure into an XML.
+    /// </summary>
     public class InvoiceDOM {
         private const String PRODUCT_NAME = "pdfInvoice";
         private const int PRODUCT_MAJOR = 1;
@@ -96,27 +100,12 @@ namespace iText.Zugferd {
         /// If this is an instance of BASICInvoice, the BASIC profile will be used;
         /// If this is an instance of COMFORTInvoice, the COMFORT profile will be used.
         /// </param>
-        /// <exception cref="Javax.Xml.Parsers.ParserConfigurationException"/>
-        /// <exception cref="Org.Xml.Sax.SAXException"/>
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
         public InvoiceDOM(IBasicProfile data) {
-            String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
-            String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
-            String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
-            }
             // code checkers
+            // The DOM document
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
@@ -131,7 +120,6 @@ namespace iText.Zugferd {
                 MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                 m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
             }
-            // The DOM document
             // loading the XML template
             doc = XDocument.Load(ResourceUtil.GetResourceStream("iText.Zugferd.Xml.zugferd-template.xml", typeof(InvoiceDOM)));
             XElement root = doc.FirstNode as XElement;
@@ -145,7 +133,7 @@ namespace iText.Zugferd {
         private static Type GetClass(string className)
         {
             String licenseKeyClassFullName = null;
-            Assembly assembly = typeof(InvoiceDOM).Assembly;
+            Assembly assembly = typeof(InvoiceDOM).GetAssembly();
             Attribute keyVersionAttr = assembly.GetCustomAttribute(typeof(KeyVersionAttribute));
             if (keyVersionAttr is KeyVersionAttribute)
             {
@@ -202,7 +190,7 @@ namespace iText.Zugferd {
             ImportContent(element, "udt:Indicator", data.GetTestIndicator() ? "true" : "false");
         }
 
-        /// <summary>Imports the data for the following tag: rsm:HeaderExchangedDocument</summary>
+        /// <summary>Imports the data for the following tag: rsm:HeaderExchangedDocument.</summary>
         /// <param name="element">the rsm:HeaderExchangedDocument element</param>
         /// <param name="data">the invoice data</param>
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
@@ -1193,11 +1181,15 @@ namespace iText.Zugferd {
                     Indent = true,
                     IndentChars = "    "
                 };
-                XmlWriter writer = XmlTextWriter.Create(fout, settings);
+                XmlWriter writer = XmlWriter.Create(fout, settings);
                 doc.WriteTo(writer);
+#if !NETSTANDARD1_6
                 writer.Close();
+#else
+                writer.Dispose();
+#endif
             }
-            fout.Close();
+            fout.Dispose();
             return fout.ToArray();
         }
 
