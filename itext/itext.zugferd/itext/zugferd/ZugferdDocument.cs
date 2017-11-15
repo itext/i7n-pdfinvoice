@@ -252,8 +252,8 @@ namespace iText.Zugferd {
         /* (non-Javadoc)
         * @see com.itextpdf.pdfa.PdfADocument#getCounter()
         */
-        protected override Counter GetCounter() {
-            return CounterFactory.GetCounter(typeof(iText.Zugferd.ZugferdDocument));
+        protected override IList<ICounter> GetCounters() {
+            return CounterManager.GetInstance().GetCounters(typeof(iText.Zugferd.ZugferdDocument));
         }
 
         /// <summary>Adds the ZUGFeRD RDF description.</summary>
