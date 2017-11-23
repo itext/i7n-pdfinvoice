@@ -86,7 +86,7 @@ namespace iText.Zugferd {
             : base(writer, pdfaConformanceLevel, outputIntent) {
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
+            String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
             Type licenseKeyClass = GetClass(licenseKeyClassName);
             if ( licenseKeyClass != null ) {
@@ -151,7 +151,7 @@ namespace iText.Zugferd {
             : this(writer, zugferdConformanceLevel, PdfAConformanceLevel.PDF_A_3B, outputIntent) {
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
+            String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
             Type licenseKeyClass = GetClass(licenseKeyClassName);
             if ( licenseKeyClass != null ) {
@@ -179,7 +179,7 @@ namespace iText.Zugferd {
             : this(writer, ZugferdConformanceLevel.ZUGFeRDBasic, pdfaConformanceLevel, outputIntent) {
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
+            String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
             Type licenseKeyClass = GetClass(licenseKeyClassName);
             if ( licenseKeyClass != null ) {
@@ -205,7 +205,7 @@ namespace iText.Zugferd {
             ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
+            String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
             Type licenseKeyClass = GetClass(licenseKeyClassName);
             if ( licenseKeyClass != null ) {
