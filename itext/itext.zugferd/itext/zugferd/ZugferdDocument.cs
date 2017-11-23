@@ -41,7 +41,7 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
-using iText.IO.Log;
+using Common.Logging;
 using iText.IO.Util;
 using iText.Kernel.Log;
 using iText.Kernel.Pdf;
@@ -163,7 +163,7 @@ namespace iText.Zugferd {
                 MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                 m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
             }
-            ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
         }
 
@@ -191,7 +191,7 @@ namespace iText.Zugferd {
                 MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                 m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
             }
-            ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
         }
 
@@ -202,7 +202,7 @@ namespace iText.Zugferd {
         /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, PdfOutputIntent outputIntent)
             : this(writer, ZugferdConformanceLevel.ZUGFeRDBasic, PdfAConformanceLevel.PDF_A_3B, outputIntent) {
-            ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
@@ -230,7 +230,7 @@ namespace iText.Zugferd {
                 AddZugferdRdfDescription(xmpMeta, zugferdConformanceLevel);
             }
             catch (XMPException e) {
-                ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+                ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
                 logger.Error(iText.IO.LogMessageConstant.EXCEPTION_WHILE_UPDATING_XMPMETADATA, e);
             }
         }
@@ -240,7 +240,7 @@ namespace iText.Zugferd {
         */
         protected override void SetChecker(PdfAConformanceLevel conformanceLevel) {
             if (!conformanceLevel.Equals(PdfAConformanceLevel.PDF_A_3B)) {
-                ILogger logger = LoggerFactory.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
+                ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
                 logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
                 checker = new ZugferdChecker(PdfAConformanceLevel.PDF_A_3B);
             }
@@ -252,8 +252,8 @@ namespace iText.Zugferd {
         /* (non-Javadoc)
         * @see com.itextpdf.pdfa.PdfADocument#getCounter()
         */
-        protected override Counter GetCounter() {
-            return CounterFactory.GetCounter(typeof(iText.Zugferd.ZugferdDocument));
+        protected override IList<ICounter> GetCounters() {
+            return CounterManager.GetInstance().GetCounters(typeof(iText.Zugferd.ZugferdDocument));
         }
 
         /// <summary>Adds the ZUGFeRD RDF description.</summary>
@@ -283,23 +283,17 @@ namespace iText.Zugferd {
         /// <param name="conformanceLevel">the conformance level</param>
         /// <returns>the ZUGFeRD extension</returns>
         private String GetZugferdExtension(ZugferdConformanceLevel conformanceLevel) {
-            // For the sake of porting to .NET we shall use MessageFormatUtil.format syntax, instead of
-            // the String.format one. As ZugferdXMPUtil.ZUGFERD_EXTENSION is a public final field, changing it
-            // is might be a binary backward compatibility breakage in some way, thus we fix it here in programmatic way.
-            // This will be removed in iText 7.1.
-            String zugferdExtensionFixedForMultiplatformHandling = ZugferdXMPUtil.ZUGFERD_EXTENSION.Replace("%s", "{0}"
-                );
             switch (conformanceLevel) {
                 case ZugferdConformanceLevel.ZUGFeRDBasic: {
-                    return MessageFormatUtil.Format(zugferdExtensionFixedForMultiplatformHandling, "BASIC");
+                    return MessageFormatUtil.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "BASIC");
                 }
 
                 case ZugferdConformanceLevel.ZUGFeRDComfort: {
-                    return MessageFormatUtil.Format(zugferdExtensionFixedForMultiplatformHandling, "COMFORT");
+                    return MessageFormatUtil.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "COMFORT");
                 }
 
                 case ZugferdConformanceLevel.ZUGFeRDExtended: {
-                    return MessageFormatUtil.Format(zugferdExtensionFixedForMultiplatformHandling, "EXTENDED");
+                    return MessageFormatUtil.Format(ZugferdXMPUtil.ZUGFERD_EXTENSION, "EXTENDED");
                 }
 
                 default: {
