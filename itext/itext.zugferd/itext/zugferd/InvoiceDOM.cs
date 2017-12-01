@@ -108,7 +108,7 @@ namespace iText.Zugferd {
             // The DOM document
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.LicenseKey.LicenseKeyProductFeature, itext.licensekey";
+            String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
             Type licenseKeyClass = GetClass(licenseKeyClassName);
             if ( licenseKeyClass != null ) {
