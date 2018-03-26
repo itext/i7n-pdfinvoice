@@ -124,7 +124,7 @@ namespace iText.Zugferd {
                 {
                     fileLoadExceptionMessage = fileLoadException.Message;
                 }
-                if (fileLoadExceptionMessage != null)
+                if (type == null)
                 {
                     try
                     {
@@ -133,6 +133,9 @@ namespace iText.Zugferd {
                     catch
                     {
                         // empty
+                    }
+                    if (type == null && fileLoadExceptionMessage != null) {
+                        LogManager.GetLogger(typeof(ZugferdDocument)).Error(fileLoadExceptionMessage);
                     }
                 }
             }
