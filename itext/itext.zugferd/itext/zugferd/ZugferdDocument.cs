@@ -88,15 +88,22 @@ namespace iText.Zugferd {
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+            try {
+                Type licenseKeyClass = GetClass(licenseKeyClassName);
+                if (licenseKeyClass != null) {
+                    Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
+                    Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
+                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
+                    object[] objects = new object[] {"pdfInvoice", 1, 0, array};
+                    Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
+                    MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
+                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+                }
+            }
+            catch (Exception) {
+                if (!Kernel.Version.IsAGPLVersion()) {
+                    throw;
+                }
             }
             this.zugferdConformanceLevel = zugferdConformanceLevel;
         }
@@ -156,15 +163,22 @@ namespace iText.Zugferd {
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+            try {
+                Type licenseKeyClass = GetClass(licenseKeyClassName);
+                if (licenseKeyClass != null) {
+                    Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
+                    Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
+                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
+                    object[] objects = new object[] {"pdfInvoice", 1, 0, array};
+                    Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
+                    MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
+                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+                }
+            }
+            catch (Exception) {
+                if (!Kernel.Version.IsAGPLVersion()) {
+                    throw;
+                }
             }
             ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
@@ -184,15 +198,22 @@ namespace iText.Zugferd {
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+            try {
+                Type licenseKeyClass = GetClass(licenseKeyClassName);
+                if (licenseKeyClass != null) {
+                    Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
+                    Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
+                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
+                    object[] objects = new object[] {"pdfInvoice", 1, 0, array};
+                    Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
+                    MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
+                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+                }
+            }
+            catch (Exception) {
+                if (!Kernel.Version.IsAGPLVersion()) {
+                    throw;
+                }
             }
             ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
             logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
@@ -210,15 +231,22 @@ namespace iText.Zugferd {
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+            try {
+                Type licenseKeyClass = GetClass(licenseKeyClassName);
+                if (licenseKeyClass != null) {
+                    Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
+                    Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
+                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
+                    object[] objects = new object[] {"pdfInvoice", 1, 0, array};
+                    Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
+                    MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
+                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+                }
+            }
+            catch (Exception) {
+                if (!Kernel.Version.IsAGPLVersion()) {
+                    throw;
+                }
             }
             logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
             logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
