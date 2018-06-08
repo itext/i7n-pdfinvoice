@@ -53,6 +53,8 @@ using System.Reflection;
 using Versions.Attributes;
 using System.IO;
 using Common.Logging;
+using iText.Kernel.Counter;
+using iText.Zugferd.Events;
 using iText.Zugferd.Exceptions;
 using iText.Zugferd.Profiles;
 using iText.Zugferd.Validation;
@@ -136,6 +138,7 @@ namespace iText.Zugferd {
             nsMapping["ram"] = ram = root.GetNamespaceOfPrefix("ram");
             // importing the data
             ImportData(root, data);
+            EventCounterHandler.GetInstance().OnEvent(PdfInvoiceEvent.PROFILE, GetType());
         }
 
         private static Type GetClass(string className)

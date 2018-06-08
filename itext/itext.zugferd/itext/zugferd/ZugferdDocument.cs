@@ -52,6 +52,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Versions.Attributes;
 using System.IO;
+using iText.Kernel.Counter;
+using iText.Zugferd.Events;
+
 namespace iText.Zugferd {
     /// <summary>ZUGFeRD documents need to be PDF/A-3 compliant.</summary>
     /// <remarks>
@@ -106,6 +109,7 @@ namespace iText.Zugferd {
                 }
             }
             this.zugferdConformanceLevel = zugferdConformanceLevel;
+            EventCounterHandler.GetInstance().OnEvent(PdfInvoiceEvent.DOCUMENT, GetType());
         }
 
         private static Type GetClass(string className)
@@ -283,6 +287,7 @@ namespace iText.Zugferd {
         /* (non-Javadoc)
         * @see com.itextpdf.pdfa.PdfADocument#getCounter()
         */
+        [Obsolete]
         protected override IList<ICounter> GetCounters() {
             return CounterManager.GetInstance().GetCounters(typeof(iText.Zugferd.ZugferdDocument));
         }
