@@ -52,6 +52,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Versions.Attributes;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Common.Logging;
 using iText.Kernel.Counter;
 using iText.Zugferd.Events;
@@ -106,6 +107,7 @@ namespace iText.Zugferd {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public InvoiceDOM(IBasicProfile data) {
             // code checkers
             // The DOM document

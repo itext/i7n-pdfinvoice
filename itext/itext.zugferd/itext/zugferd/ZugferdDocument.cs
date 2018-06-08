@@ -52,6 +52,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Versions.Attributes;
 using System.IO;
+using System.Runtime.CompilerServices;
 using iText.Kernel.Counter;
 using iText.Zugferd.Events;
 
@@ -84,6 +85,7 @@ namespace iText.Zugferd {
         ///     </param>
         /// <param name="pdfaConformanceLevel">PDF/A conformance level</param>
         /// <param name="outputIntent">PDF/A output intent for the document.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfAConformanceLevel
              pdfaConformanceLevel, PdfOutputIntent outputIntent)
             : base(writer, pdfaConformanceLevel, outputIntent) {
