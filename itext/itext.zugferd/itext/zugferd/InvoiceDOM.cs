@@ -48,11 +48,8 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using iText.IO.Util;
-using System.Collections.Generic;
 using System.Reflection;
 using Versions.Attributes;
-using System.IO;
-using System.Runtime.CompilerServices;
 using Common.Logging;
 using iText.Kernel.Counter;
 using iText.Zugferd.Events;
@@ -107,8 +104,19 @@ namespace iText.Zugferd {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public InvoiceDOM(IBasicProfile data) {
+        public InvoiceDOM(IBasicProfile data) : this(data, new InvoiceProperties()) {
+        }
+
+        /// <summary>Creates an object that will import data into an XML template.</summary>
+        /// <param name="data">
+        /// If this is an instance of BASICInvoice, the BASIC profile will be used;
+        /// If this is an instance of COMFORTInvoice, the COMFORT profile will be used.
+        /// </param>
+        /// <param name="properties">Invoice propertis.</param>
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
+        /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
+        public InvoiceDOM(IBasicProfile data, InvoiceProperties properties) {
             // code checkers
             // The DOM document
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
@@ -121,10 +129,10 @@ namespace iText.Zugferd {
                     Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
                     Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
                     Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                    object[] objects = new object[] {"pdfInvoice", 1, 0, array};
+                    object[] objects = new object[] { "pdfInvoice", 1, 0, array };
                     Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
                     MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] { productObject });
                 }
             }
             catch (Exception) {
@@ -140,7 +148,7 @@ namespace iText.Zugferd {
             nsMapping["ram"] = ram = root.GetNamespaceOfPrefix("ram");
             // importing the data
             ImportData(root, data);
-            EventCounterHandler.GetInstance().OnEvent(PdfInvoiceEvent.PROFILE, GetType());
+            EventCounterHandler.GetInstance().OnEvent(PdfInvoiceEvent.PROFILE, properties.metaInfo, GetType());
         }
 
         private static Type GetClass(string className)
