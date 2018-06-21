@@ -64,10 +64,6 @@ namespace iText.Zugferd {
     /// Represents the DOM structure of a ZUGFeRD invoice. It will load the data from the IBasicProfile implementation. This class is also responsible to transform this dom structure into an XML.
     /// </summary>
     public class InvoiceDOM {
-        private const String PRODUCT_NAME = "pdfInvoice";
-        private const int PRODUCT_MAJOR = 1;
-        private const int PRODUCT_MINOR = 0;
-
         public static readonly CountryCode COUNTRY_CODE = new CountryCode();
 
         public static readonly CurrencyCode CURR_CODE = new CurrencyCode();
@@ -129,7 +125,13 @@ namespace iText.Zugferd {
                     Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
                     Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
                     Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                    object[] objects = new object[] { "pdfInvoice", 1, 0, array };
+                    object[] objects = new object[]
+                    {
+                        ZugferdProductInfo.PRODUCT_NAME,
+                        ZugferdProductInfo.MAJOR_VERSION,
+                        ZugferdProductInfo.MINOR_VERSION,
+                        array
+                    };
                     Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
                     MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                     m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] { productObject });

@@ -66,15 +66,6 @@ namespace iText.Zugferd {
     /// ZUGFeRD compliance.
     /// </remarks>
     public class ZugferdDocument : PdfADocument {
-        /// <summary>The Constant PRODUCT_NAME.</summary>
-        private const String PRODUCT_NAME = "pdfInvoice";
-
-        /// <summary>The Constant PRODUCT_MAJOR.</summary>
-        private const int PRODUCT_MAJOR = 1;
-
-        /// <summary>The Constant PRODUCT_MINOR.</summary>
-        private const int PRODUCT_MINOR = 0;
-
         /// <summary>The ZUGFeRD conformance level.</summary>
         private ZugferdConformanceLevel zugferdConformanceLevel;
 
@@ -94,7 +85,13 @@ namespace iText.Zugferd {
                     Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
                     Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
                     Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                    object[] objects = new object[] {"pdfInvoice", 1, 0, array};
+                    object[] objects = new object[]
+                    {
+                        ZugferdProductInfo.PRODUCT_NAME,
+                        ZugferdProductInfo.MAJOR_VERSION,
+                        ZugferdProductInfo.MINOR_VERSION,
+                        array
+                    };
                     Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
                     MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                     m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
