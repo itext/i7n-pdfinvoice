@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 11.00
+Project("{51C20C79-DE6F-443B-8C94-4237CFF232FB}") = "itext.zugferd", "itext\itext.zugferd\itext.zugferd.netstandard.csproj", "{CF45E61E-A3BC-4B64-AA92-5814AF726286}"
+EndProject
+Project("{51C20C79-DE6F-443B-8C94-4237CFF232FB}") = "itext.zugferd.tests", "itext.tests\itext.zugferd.tests\itext.zugferd.tests.netstandard.csproj", "{B0F11422-C4BC-481E-88A8-CBA916A05AF7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF45E61E-A3BC-4B64-AA92-5814AF726286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF45E61E-A3BC-4B64-AA92-5814AF726286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF45E61E-A3BC-4B64-AA92-5814AF726286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF45E61E-A3BC-4B64-AA92-5814AF726286}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0F11422-C4BC-481E-88A8-CBA916A05AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0F11422-C4BC-481E-88A8-CBA916A05AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0F11422-C4BC-481E-88A8-CBA916A05AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0F11422-C4BC-481E-88A8-CBA916A05AF7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
