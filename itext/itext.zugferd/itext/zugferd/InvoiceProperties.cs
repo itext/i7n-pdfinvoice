@@ -1,7 +1,8 @@
 /*
+
 This file is part of the iText (R) project.
 Copyright (c) 1998-2018 iText Group NV
-Authors: Bruno Lowagie, et al.
+Authors: Bruno Lowagie, Paulo Soares, et al.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License version 3
@@ -40,26 +41,36 @@ source product.
 For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
-using System;
-using iText.Pdfa;
+using iText.Kernel.Counter.Event;
 
 namespace iText.Zugferd {
-    /// <summary>The ZUGFeRD conformance exception class.</summary>
-    public class ZugferdConformanceException : PdfAConformanceException {
-        /// <summary>The Constant AFRelationshipValueShallbeAlternative.</summary>
-        public const String AFRelationshipValueShallbeAlternative = "AFRelationship value shall be Alternative";
+    public class InvoiceProperties {
+        protected internal IMetaInfo metaInfo = null;
 
-        /// <summary>Creates ZUGFeRD conformance exception.</summary>
-        /// <param name="message">an exception message.</param>
-        public ZugferdConformanceException(String message)
-            : base(message) {
+        public InvoiceProperties() {
         }
 
-        /// <summary>Creates ZUGFeRD conformance exception.</summary>
-        /// <param name="message">the error message</param>
-        /// <param name="object">an object</param>
-        public ZugferdConformanceException(String message, Object @object)
-            : base(message, @object) {
+        public InvoiceProperties(iText.Zugferd.InvoiceProperties other) {
+            this.metaInfo = other.metaInfo;
+        }
+
+        /// <summary>Sets document meta info.</summary>
+        /// <remarks>
+        /// Sets document meta info. This meta info will be passed to the
+        /// <see cref="iText.Kernel.Counter.EventCounter"/>
+        /// with
+        /// <see cref="iText.Zugferd.Events.PdfInvoiceEvent"/>
+        /// and can be used to determine event origin.
+        /// </remarks>
+        /// <param name="metaInfo">meta info to set</param>
+        /// <returns>
+        /// this
+        /// <see cref="InvoiceProperties"/>
+        /// instance
+        /// </returns>
+        public virtual iText.Zugferd.InvoiceProperties SetEventCountingMetaInfo(IMetaInfo metaInfo) {
+            this.metaInfo = metaInfo;
+            return this;
         }
     }
 }

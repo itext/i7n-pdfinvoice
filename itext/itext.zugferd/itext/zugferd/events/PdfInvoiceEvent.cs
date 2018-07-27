@@ -1,7 +1,8 @@
 /*
+
 This file is part of the iText (R) project.
 Copyright (c) 1998-2018 iText Group NV
-Authors: Bruno Lowagie, et al.
+Authors: Bruno Lowagie, Paulo Soares, et al.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License version 3
@@ -41,25 +42,29 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
-using iText.Pdfa;
+using iText.Kernel.Counter;
+using iText.Kernel.Counter.Event;
 
-namespace iText.Zugferd {
-    /// <summary>The ZUGFeRD conformance exception class.</summary>
-    public class ZugferdConformanceException : PdfAConformanceException {
-        /// <summary>The Constant AFRelationshipValueShallbeAlternative.</summary>
-        public const String AFRelationshipValueShallbeAlternative = "AFRelationship value shall be Alternative";
+namespace iText.Zugferd.Events {
+    public class PdfInvoiceEvent : IGenericEvent {
+        public static readonly iText.Zugferd.Events.PdfInvoiceEvent PROFILE = new iText.Zugferd.Events.PdfInvoiceEvent
+            ("profile");
 
-        /// <summary>Creates ZUGFeRD conformance exception.</summary>
-        /// <param name="message">an exception message.</param>
-        public ZugferdConformanceException(String message)
-            : base(message) {
+        public static readonly iText.Zugferd.Events.PdfInvoiceEvent DOCUMENT = new iText.Zugferd.Events.PdfInvoiceEvent
+            ("document");
+
+        private readonly String subtype;
+
+        private PdfInvoiceEvent(String subtype) {
+            this.subtype = subtype;
         }
 
-        /// <summary>Creates ZUGFeRD conformance exception.</summary>
-        /// <param name="message">the error message</param>
-        /// <param name="object">an object</param>
-        public ZugferdConformanceException(String message, Object @object)
-            : base(message, @object) {
+        public virtual String GetEventType() {
+            return "invoice-" + subtype;
+        }
+
+        public virtual String GetOriginId() {
+            return NamespaceConstant.PDF_INVOICE;
         }
     }
 }

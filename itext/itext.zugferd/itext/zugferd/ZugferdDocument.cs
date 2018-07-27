@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2017 iText Group NV
+Copyright (c) 1998-2018 iText Group NV
 Authors: Bruno Lowagie, et al.
 
 This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using Versions.Attributes;
 using System.IO;
+using iText.Kernel.Counter;
+using iText.Kernel.Counter.Event;
+using iText.Zugferd.Events;
+
 namespace iText.Zugferd {
     /// <summary>ZUGFeRD documents need to be PDF/A-3 compliant.</summary>
     /// <remarks>
@@ -62,43 +66,44 @@ namespace iText.Zugferd {
     /// ZUGFeRD compliance.
     /// </remarks>
     public class ZugferdDocument : PdfADocument {
-        /// <summary>The Constant PRODUCT_NAME.</summary>
-        private const String PRODUCT_NAME = "pdfInvoice";
-
-        /// <summary>The Constant PRODUCT_MAJOR.</summary>
-        private const int PRODUCT_MAJOR = 1;
-
-        /// <summary>The Constant PRODUCT_MINOR.</summary>
-        private const int PRODUCT_MINOR = 0;
-
         /// <summary>The ZUGFeRD conformance level.</summary>
         private ZugferdConformanceLevel zugferdConformanceLevel;
 
         /// <summary>Creates a ZUGFeRD document with the passed ZUGFeRD conformance level, PDF/A conformance level and output intent using the passed writer.
         ///     </summary>
         /// <param name="writer">Writer to output the PDF</param>
-        /// <param name="zugferdConformanceLevel">ZUGFeRD conformance level, one of  the following: BASIC, COMFORT or EXTENDED
-        ///     </param>
-        /// <param name="pdfaConformanceLevel">PDF/A conformance level</param>
-        /// <param name="outputIntent">PDF/A output intent for the document.</param>
-        public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfAConformanceLevel
-             pdfaConformanceLevel, PdfOutputIntent outputIntent)
-            : base(writer, pdfaConformanceLevel, outputIntent) {
+        /// <param name="properties">ZUGFeRD properties.</param>
+        public ZugferdDocument(PdfWriter writer, ZugferdProperties properties)
+            : base(writer, GetPdfAConformanceLevel(properties), properties.pdfOutputIntent, new DocumentProperties().SetEventCountingMetaInfo(new ZugferdMetaInfo())) {
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+            try {
+                Type licenseKeyClass = GetClass(licenseKeyClassName);
+                if (licenseKeyClass != null) {
+                    Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
+                    Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
+                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
+                    object[] objects = new object[]
+                    {
+                        ZugferdProductInfo.PRODUCT_NAME,
+                        ZugferdProductInfo.MAJOR_VERSION,
+                        ZugferdProductInfo.MINOR_VERSION,
+                        array
+                    };
+                    Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
+                    MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
+                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+                }
             }
-            this.zugferdConformanceLevel = zugferdConformanceLevel;
+            catch (Exception) {
+                if (!Kernel.Version.IsAGPLVersion()) {
+                    throw;
+                }
+            }
+            this.zugferdConformanceLevel = GetZugferdConformanceLevel(properties);
+            EventCounterHandler.GetInstance().OnEvent(PdfInvoiceEvent.DOCUMENT, properties.metaInfo, GetType());
         }
 
         private static Type GetClass(string className)
@@ -124,7 +129,7 @@ namespace iText.Zugferd {
                 {
                     fileLoadExceptionMessage = fileLoadException.Message;
                 }
-                if (fileLoadExceptionMessage != null)
+                if (type == null)
                 {
                     try
                     {
@@ -134,9 +139,23 @@ namespace iText.Zugferd {
                     {
                         // empty
                     }
+                    if (type == null && fileLoadExceptionMessage != null) {
+                        LogManager.GetLogger(typeof(ZugferdDocument)).Error(fileLoadExceptionMessage);
+                    }
                 }
             }
             return type;
+        }
+
+        /// <summary>Creates a ZUGFeRD document with the passed ZUGFeRD conformance level, PDF/A conformance level and output intent using the passed writer.
+        ///     </summary>
+        /// <param name="writer">Writer to output the PDF</param>
+        /// <param name="zugferdConformanceLevel">ZUGFeRD conformance level, one of  the following: BASIC, COMFORT or EXTENDED
+        ///     </param>
+        /// <param name="pdfaConformanceLevel">PDF/A conformance level</param>
+        /// <param name="outputIntent">PDF/A output intent for the document.</param>
+        public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfAConformanceLevel pdfaConformanceLevel, PdfOutputIntent outputIntent)
+            : this(writer, new ZugferdProperties().SetZugferdConformanceLevel(zugferdConformanceLevel).SetPdfAConformanceLevel(pdfaConformanceLevel).SetPdfOutputIntent(outputIntent)) {
         }
 
         /// <summary>Creates a ZUGFeRD document with the passed ZUGFeRD conformance level and output intent using the passed writer.
@@ -146,25 +165,8 @@ namespace iText.Zugferd {
         /// <param name="writer">Writer to output the pdf</param>
         /// <param name="zugferdConformanceLevel">ZUGFeRD conformance level, BASIC, COMFORT or EXTENDED</param>
         /// <param name="outputIntent">Pdf/A output intent for the document</param>
-        public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfOutputIntent 
-            outputIntent)
-            : this(writer, zugferdConformanceLevel, PdfAConformanceLevel.PDF_A_3B, outputIntent) {
-            String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
-            String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
-            String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
-            }
-            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
-            logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
+        public ZugferdDocument(PdfWriter writer, ZugferdConformanceLevel zugferdConformanceLevel, PdfOutputIntent outputIntent)
+            : this(writer, new ZugferdProperties().SetZugferdConformanceLevel(zugferdConformanceLevel).SetPdfOutputIntent(outputIntent)) {
         }
 
         /// <summary>Creates a ZUGFeRD document with the passed Pdf/A conformance level and output intent using the passed writer.
@@ -174,25 +176,8 @@ namespace iText.Zugferd {
         /// <param name="writer">Writer to output the pdf</param>
         /// <param name="pdfaConformanceLevel">Pdf/A conformance level</param>
         /// <param name="outputIntent">Pdf/A output intent for the document</param>
-        public ZugferdDocument(PdfWriter writer, PdfAConformanceLevel pdfaConformanceLevel, PdfOutputIntent outputIntent
-            )
-            : this(writer, ZugferdConformanceLevel.ZUGFeRDBasic, pdfaConformanceLevel, outputIntent) {
-            String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
-            String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
-            String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
-            }
-            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
-            logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
+        public ZugferdDocument(PdfWriter writer, PdfAConformanceLevel pdfaConformanceLevel, PdfOutputIntent outputIntent)
+            : this(writer, new ZugferdProperties().SetPdfAConformanceLevel(pdfaConformanceLevel).SetPdfOutputIntent(outputIntent)) {
         }
 
         /// <summary>Create a ZUGFeRD document with the given output intent using given the writer.</summary>
@@ -201,24 +186,7 @@ namespace iText.Zugferd {
         /// <param name="writer">Writer to output the pdf</param>
         /// <param name="outputIntent">Pdf/A output intent for the document</param>
         public ZugferdDocument(PdfWriter writer, PdfOutputIntent outputIntent)
-            : this(writer, ZugferdConformanceLevel.ZUGFeRDBasic, PdfAConformanceLevel.PDF_A_3B, outputIntent) {
-            ILog logger = LogManager.GetLogger(typeof(iText.Zugferd.ZugferdDocument));
-            String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
-            String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-            String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
-            String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
-            }
-            logger.Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
-            logger.Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
+            : this(writer, new ZugferdProperties().SetPdfOutputIntent(outputIntent)) {
         }
 
         /* (non-Javadoc)
@@ -252,6 +220,7 @@ namespace iText.Zugferd {
         /* (non-Javadoc)
         * @see com.itextpdf.pdfa.PdfADocument#getCounter()
         */
+        [Obsolete]
         protected override IList<ICounter> GetCounters() {
             return CounterManager.GetInstance().GetCounters(typeof(iText.Zugferd.ZugferdDocument));
         }
@@ -300,6 +269,31 @@ namespace iText.Zugferd {
                     return null;
                 }
             }
+        }
+
+        private static PdfAConformanceLevel GetPdfAConformanceLevel(ZugferdProperties properties) {
+            PdfAConformanceLevel local = properties.pdfaConformanceLevel;
+            if (local != null) {
+                return local;
+            }
+            else {
+                LogManager.GetLogger(typeof(ZugferdDocument)).Warn(ZugferdLogMessageConstant.WRONG_OR_NO_CONFORMANCE_LEVEL);
+                return PdfAConformanceLevel.PDF_A_3B;
+            }
+        }
+
+        private static ZugferdConformanceLevel GetZugferdConformanceLevel(ZugferdProperties properties) {
+            ZugferdConformanceLevel? local = properties.zugferdConformanceLevel;
+            if (local != null) {
+                return local.Value;
+            }
+            else {
+                LogManager.GetLogger(typeof(ZugferdDocument)).Warn(ZugferdLogMessageConstant.NO_ZUGFERD_PROFILE_TYPE_SPECIFIED);
+                return ZugferdConformanceLevel.ZUGFeRDBasic;
+            }
+        }
+
+        private class ZugferdMetaInfo : IMetaInfo {
         }
     }
 }

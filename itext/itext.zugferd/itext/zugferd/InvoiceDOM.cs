@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2017 iText Group NV
+Copyright (c) 1998-2018 iText Group NV
 Authors: Bruno Lowagie, et al.
 
 This program is free software; you can redistribute it and/or modify
@@ -48,10 +48,11 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using iText.IO.Util;
-using System.Collections.Generic;
 using System.Reflection;
 using Versions.Attributes;
-using System.IO;
+using Common.Logging;
+using iText.Kernel.Counter;
+using iText.Zugferd.Events;
 using iText.Zugferd.Exceptions;
 using iText.Zugferd.Profiles;
 using iText.Zugferd.Validation;
@@ -63,10 +64,6 @@ namespace iText.Zugferd {
     /// Represents the DOM structure of a ZUGFeRD invoice. It will load the data from the IBasicProfile implementation. This class is also responsible to transform this dom structure into an XML.
     /// </summary>
     public class InvoiceDOM {
-        private const String PRODUCT_NAME = "pdfInvoice";
-        private const int PRODUCT_MAJOR = 1;
-        private const int PRODUCT_MINOR = 0;
-
         public static readonly CountryCode COUNTRY_CODE = new CountryCode();
 
         public static readonly CurrencyCode CURR_CODE = new CurrencyCode();
@@ -103,22 +100,47 @@ namespace iText.Zugferd {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
         /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
-        public InvoiceDOM(IBasicProfile data) {
+        public InvoiceDOM(IBasicProfile data) : this(data, new InvoiceProperties()) {
+        }
+
+        /// <summary>Creates an object that will import data into an XML template.</summary>
+        /// <param name="data">
+        /// If this is an instance of BASICInvoice, the BASIC profile will be used;
+        /// If this is an instance of COMFORTInvoice, the COMFORT profile will be used.
+        /// </param>
+        /// <param name="properties">Invoice propertis.</param>
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="iText.Zugferd.Exceptions.DataIncompleteException"/>
+        /// <exception cref="iText.Zugferd.Exceptions.InvalidCodeException"/>
+        public InvoiceDOM(IBasicProfile data, InvoiceProperties properties) {
             // code checkers
             // The DOM document
             String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
             String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
             String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
             String checkLicenseKeyMethodName = "ScheduledCheck";
-            Type licenseKeyClass = GetClass(licenseKeyClassName);
-            if ( licenseKeyClass != null ) {
-                Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                object[] objects = new object[] { "pdfInvoice", 1, 0, array };
-                Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
+            try {
+                Type licenseKeyClass = GetClass(licenseKeyClassName);
+                if (licenseKeyClass != null) {
+                    Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
+                    Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
+                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
+                    object[] objects = new object[]
+                    {
+                        ZugferdProductInfo.PRODUCT_NAME,
+                        ZugferdProductInfo.MAJOR_VERSION,
+                        ZugferdProductInfo.MINOR_VERSION,
+                        array
+                    };
+                    Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
+                    MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
+                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] { productObject });
+                }
+            }
+            catch (Exception) {
+                if (!Kernel.Version.IsAGPLVersion()) {
+                    throw;
+                }
             }
             // loading the XML template
             doc = XDocument.Load(ResourceUtil.GetResourceStream("iText.Zugferd.Xml.zugferd-template.xml", typeof(InvoiceDOM)));
@@ -128,6 +150,7 @@ namespace iText.Zugferd {
             nsMapping["ram"] = ram = root.GetNamespaceOfPrefix("ram");
             // importing the data
             ImportData(root, data);
+            EventCounterHandler.GetInstance().OnEvent(PdfInvoiceEvent.PROFILE, properties.metaInfo, GetType());
         }
 
         private static Type GetClass(string className)
@@ -153,7 +176,7 @@ namespace iText.Zugferd {
                 {
                     fileLoadExceptionMessage = fileLoadException.Message;
                 }
-                if (fileLoadExceptionMessage != null)
+                if (type == null)
                 {
                     try
                     {
@@ -162,6 +185,9 @@ namespace iText.Zugferd {
                     catch
                     {
                         // empty
+                    }
+                    if (type == null && fileLoadExceptionMessage != null) {
+                        LogManager.GetLogger(typeof(InvoiceDOM)).Error(fileLoadExceptionMessage);
                     }
                 }
             }
